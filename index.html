@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Surya learning DevSecOps: Skill Tree</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080c10;
+    --panel: #0d1117;
+    --border: #1e2d3d;
+    --accent: #00d4ff;
+    --accent2: #00ff88;
+    --accent3: #ff6b35;
+    --accent4: #b44fff;
+    --text: #c9d1d9;
+    --dim: #6e7681;
+    --gold: #ffd700;
+    --danger: #ff4444;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Share Tech Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,212,255,0.012) 2px, rgba(0,212,255,0.012) 4px);
+    pointer-events: none; z-index: 9999;
+  }
+  body::after {
+    content: '';
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background-image: linear-gradient(rgba(0,212,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(0,212,255,0.025) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none; z-index: 0;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(8,12,16,0.97);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(12px);
+    padding: 14px 28px;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    flex-wrap: wrap;
+  }
+  .header-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 22px; font-weight: 900;
+    color: var(--accent); letter-spacing: 4px;
+    text-shadow: 0 0 20px rgba(0,212,255,0.4);
+    white-space: nowrap;
+  }
+  .header-title span { color: var(--accent2); }
+  .header-stats { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .stat-pill {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 6px; padding: 8px 14px; font-size: 13px;
+  }
+  .stat-label { color: var(--dim); }
+  .stat-value { color: var(--accent); font-weight: bold; }
+  .stat-value.green { color: var(--accent2); }
+  .stat-value.gold { color: var(--gold); }
+  .xp-bar-wrap { min-width: 140px; max-width: 220px; flex: 1; }
+  .xp-bar-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--dim); margin-bottom: 4px; }
+  .xp-bar { height: 7px; background: #1a2233; border-radius: 3px; overflow: hidden; }
+  .xp-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); transition: width 0.5s; box-shadow: 0 0 8px var(--accent); }
+
+  /* ── NAV ── */
+  .nav-tabs {
+    display: flex; gap: 4px; padding: 0 28px;
+    background: var(--panel); border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+  }
+  .nav-tab {
+    padding: 13px 20px; font-family: 'Share Tech Mono', monospace;
+    font-size: 13px; color: var(--dim); background: none; border: none;
+    border-bottom: 2px solid transparent; cursor: pointer;
+    white-space: nowrap; transition: all 0.2s; letter-spacing: 1px; text-transform: uppercase;
+  }
+  .nav-tab:hover { color: var(--text); }
+  .nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .nav-tab .tab-badge {
+    display: inline-block; background: var(--accent); color: #000;
+    font-size: 10px; border-radius: 8px; padding: 1px 6px; margin-left: 6px;
+  }
+
+  /* ── MAIN ── */
+  .main { position: relative; z-index: 1; padding: 28px; max-width: 1500px; margin: 0 auto; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+  .section-intro {
+    font-size: 13px; color: var(--dim); margin-bottom: 22px;
+    padding: 14px 18px; background: rgba(0,212,255,0.04);
+    border-left: 3px solid var(--accent); border-radius: 0 4px 4px 0; line-height: 1.7;
+  }
+
+  /* ── FILTER BAR ── */
+  .filter-bar {
+    display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; align-items: center;
+  }
+  .filter-btn {
+    padding: 8px 18px; font-family: 'Share Tech Mono', monospace;
+    font-size: 12px; background: var(--panel); border: 1px solid var(--border);
+    border-radius: 5px; color: var(--dim); cursor: pointer;
+    transition: all 0.2s; letter-spacing: 1px; text-transform: uppercase;
+  }
+  .filter-btn:hover { color: var(--text); border-color: var(--accent); }
+  .filter-btn.active { color: var(--accent); border-color: var(--accent); background: rgba(0,212,255,0.08); }
+  .search-box {
+    flex: 1; min-width: 180px; max-width: 340px;
+    padding: 8px 16px; background: var(--panel); border: 1px solid var(--border);
+    border-radius: 5px; color: var(--text); font-family: 'Share Tech Mono', monospace;
+    font-size: 13px; outline: none; transition: border-color 0.2s;
+  }
+  .search-box:focus { border-color: var(--accent); }
+  .search-box::placeholder { color: var(--dim); }
+
+  /* ── PHASE GRID ── */
+  .phase-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 20px; }
+
+  .phase-card {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 10px; overflow: hidden; transition: all 0.3s;
+  }
+  .phase-card:hover { border-color: var(--accent); box-shadow: 0 0 24px rgba(0,212,255,0.1); transform: translateY(-2px); }
+  .phase-card.completed { border-color: var(--accent2); box-shadow: 0 0 16px rgba(0,255,136,0.09); }
+  .phase-card.hidden { display: none; }
+
+  .phase-header {
+    padding: 16px 18px; display: flex; align-items: center; gap: 14px;
+    border-bottom: 1px solid var(--border); cursor: pointer; user-select: none;
+  }
+  .phase-icon {
+    width: 46px; height: 46px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; flex-shrink: 0;
+  }
+  .phase-info { flex: 1; min-width: 0; }
+  .phase-name {
+    font-family: 'Orbitron', monospace; font-size: 12px;
+    font-weight: 700; letter-spacing: 1px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .phase-meta { display: flex; align-items: center; gap: 10px; margin-top: 5px; }
+  .phase-hours { font-size: 12px; color: var(--dim); }
+  .phase-progress-text { font-size: 12px; color: var(--accent2); }
+  .phase-progress-bar { height: 4px; background: #1a2233; border-radius: 2px; overflow: hidden; margin-top: 7px; }
+  .phase-progress-fill { height: 100%; border-radius: 2px; transition: width 0.5s; }
+  .phase-toggle { color: var(--dim); font-size: 14px; transition: transform 0.3s; flex-shrink: 0; }
+  .phase-toggle.open { transform: rotate(90deg); }
+
+  .skills-list { display: none; padding: 8px 14px 14px; gap: 4px; flex-direction: column; }
+  .skills-list.open { display: flex; }
+
+  .skill-item {
+    display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+    border-radius: 5px; cursor: pointer; transition: all 0.15s;
+    border: 1px solid transparent;
+  }
+  .skill-item:hover { background: rgba(0,212,255,0.05); border-color: rgba(0,212,255,0.18); }
+  .skill-item.done { background: rgba(0,255,136,0.04); border-color: rgba(0,255,136,0.14); }
+  .skill-item.done .skill-name { color: var(--accent2); }
+  .skill-checkbox {
+    width: 19px; height: 19px; border: 1px solid var(--border);
+    border-radius: 4px; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; transition: all 0.2s; font-size: 11px;
+  }
+  .skill-item.done .skill-checkbox { background: var(--accent2); border-color: var(--accent2); color: #000; box-shadow: 0 0 8px rgba(0,255,136,0.4); }
+  .skill-name { font-size: 13px; color: var(--text); flex: 1; line-height: 1.45; }
+  .skill-xp { font-size: 11px; color: var(--accent); flex-shrink: 0; }
+
+  /* ── PROJECTS ── */
+  .projects-layout { display: grid; grid-template-columns: 1fr 360px; gap: 20px; align-items: start; }
+  @media (max-width: 900px) { .projects-layout { grid-template-columns: 1fr; } }
+
+  .project-cards { display: flex; flex-direction: column; gap: 12px; }
+
+  .project-card {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 8px; padding: 16px; transition: all 0.2s;
+    position: relative;
+  }
+  .project-card:hover { border-color: rgba(255,215,0,0.3); box-shadow: 0 0 15px rgba(255,215,0,0.05); }
+
+  .project-card-header { display: flex; align-items: flex-start; gap: 12px; }
+  .project-status-dot {
+    width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; margin-top: 4px;
+  }
+  .status-todo { background: var(--dim); }
+  .status-inprogress { background: var(--accent); box-shadow: 0 0 6px var(--accent); animation: pulse 2s infinite; }
+  .status-done { background: var(--accent2); box-shadow: 0 0 6px var(--accent2); }
+
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  .project-card-info { flex: 1; min-width: 0; }
+  .project-title { font-size: 15px; color: var(--text); font-weight: bold; }
+  .project-phase-tag {
+    display: inline-block; font-size: 10px; padding: 3px 9px;
+    border-radius: 3px; margin-top: 5px; letter-spacing: 1px;
+  }
+  .project-desc { font-size: 13px; color: var(--dim); margin-top: 10px; line-height: 1.6; }
+
+  .project-meta { display: flex; gap: 14px; margin-top: 10px; flex-wrap: wrap; }
+  .project-meta-item { font-size: 11px; color: var(--dim); }
+  .project-meta-item span { color: var(--text); }
+
+  .project-tech { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+  .tech-chip {
+    font-size: 9px; padding: 2px 7px; border-radius: 3px;
+    background: rgba(0,212,255,0.08); border: 1px solid rgba(0,212,255,0.2); color: var(--accent);
+    letter-spacing: 1px;
+  }
+
+  .project-actions { display: flex; gap: 8px; margin-top: 12px; }
+  .proj-btn {
+    padding: 5px 12px; font-family: 'Share Tech Mono', monospace;
+    font-size: 10px; border-radius: 4px; cursor: pointer; transition: all 0.2s; letter-spacing: 1px;
+  }
+  .proj-btn-status {
+    background: rgba(0,212,255,0.08); border: 1px solid rgba(0,212,255,0.25); color: var(--accent);
+  }
+  .proj-btn-status:hover { background: rgba(0,212,255,0.18); }
+  .proj-btn-delete {
+    background: rgba(255,68,68,0.06); border: 1px solid rgba(255,68,68,0.2); color: var(--danger);
+  }
+  .proj-btn-delete:hover { background: rgba(255,68,68,0.15); }
+  .proj-btn-note {
+    background: rgba(255,215,0,0.06); border: 1px solid rgba(255,215,0,0.2); color: var(--gold);
+  }
+  .proj-btn-note:hover { background: rgba(255,215,0,0.15); }
+
+  .project-note {
+    margin-top: 10px; padding: 8px 10px;
+    background: rgba(255,215,0,0.04); border: 1px solid rgba(255,215,0,0.15);
+    border-radius: 4px; font-size: 10px; color: #b8a450; line-height: 1.5;
+    display: none;
+  }
+  .project-note.visible { display: block; }
+
+  /* Add project form */
+  .add-project-panel {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 8px; padding: 18px; position: sticky; top: 120px;
+  }
+  .form-title {
+    font-family: 'Orbitron', monospace; font-size: 13px;
+    color: var(--accent); letter-spacing: 2px; margin-bottom: 16px;
+  }
+  .form-group { margin-bottom: 13px; }
+  .form-label { font-size: 11px; color: var(--dim); margin-bottom: 5px; display: block; letter-spacing: 1px; }
+  .form-input, .form-select, .form-textarea {
+    width: 100%; padding: 9px 12px;
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 4px; color: var(--text);
+    font-family: 'Share Tech Mono', monospace; font-size: 13px; outline: none;
+    transition: border-color 0.2s;
+  }
+  .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--accent); }
+  .form-textarea { resize: vertical; min-height: 80px; }
+  .form-select option { background: var(--panel); }
+  .form-btn {
+    width: 100%; padding: 12px; margin-top: 4px;
+    background: linear-gradient(135deg, rgba(0,212,255,0.12), rgba(0,255,136,0.08));
+    border: 1px solid var(--accent); border-radius: 5px;
+    color: var(--accent); font-family: 'Orbitron', monospace;
+    font-size: 12px; font-weight: 700; letter-spacing: 2px;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .form-btn:hover { background: rgba(0,212,255,0.22); box-shadow: 0 0 18px rgba(0,212,255,0.15); }
+
+  .proj-stats-row {
+    display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 16px;
+  }
+  .proj-stat-box {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 6px; padding: 10px; text-align: center;
+  }
+  .proj-stat-val { font-family: 'Orbitron', monospace; font-size: 18px; font-weight: 700; }
+  .proj-stat-lbl { font-size: 9px; color: var(--dim); margin-top: 3px; letter-spacing: 1px; }
+  .empty-projects {
+    text-align: center; padding: 48px 20px;
+    color: var(--dim); font-size: 12px; line-height: 2;
+    border: 1px dashed var(--border); border-radius: 8px;
+  }
+
+  /* ── LEADERBOARD ── */
+  .leaderboard-panel { max-width: 760px; margin: 0 auto; }
+  .lb-header {
+    font-family: 'Orbitron', monospace; font-size: 16px; font-weight: 700;
+    color: var(--gold); letter-spacing: 3px; margin-bottom: 22px;
+    text-align: center; text-shadow: 0 0 20px rgba(255,215,0,0.25);
+  }
+  .lb-section { margin-bottom: 28px; }
+  .lb-section-title {
+    font-size: 12px; color: var(--dim); letter-spacing: 2px; text-transform: uppercase;
+    margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border);
+  }
+  .lb-entry {
+    display: flex; align-items: center; gap: 16px;
+    padding: 14px 18px; background: var(--panel);
+    border: 1px solid var(--border); border-radius: 7px;
+    margin-bottom: 8px; transition: all 0.2s;
+  }
+  .lb-entry:hover { border-color: var(--accent); }
+  .lb-rank { font-family: 'Orbitron', monospace; font-size: 20px; font-weight: 900; width: 34px; text-align: center; flex-shrink: 0; }
+  .lb-rank.r1 { color: var(--gold); text-shadow: 0 0 10px rgba(255,215,0,0.4); }
+  .lb-rank.r2 { color: #c0c0c0; }
+  .lb-rank.r3 { color: #cd7f32; }
+  .lb-rank.other { color: var(--dim); font-size: 14px; }
+  .lb-info { flex: 1; }
+  .lb-name { font-size: 14px; color: var(--text); }
+  .lb-date { font-size: 11px; color: var(--dim); margin-top: 3px; }
+  .lb-score { text-align: right; flex-shrink: 0; }
+  .lb-xp-val { font-family: 'Orbitron', monospace; font-size: 17px; font-weight: 700; color: var(--accent); }
+  .lb-skills-val { font-size: 11px; color: var(--dim); margin-top: 2px; }
+  .lb-badge { font-size: 11px; padding: 3px 9px; border-radius: 4px; }
+  .save-btn {
+    display: block; width: 100%; max-width: 260px; margin: 20px auto 0;
+    padding: 10px; background: linear-gradient(135deg, rgba(0,212,255,0.1), rgba(0,255,136,0.08));
+    border: 1px solid var(--accent); border-radius: 6px; color: var(--accent);
+    font-family: 'Orbitron', monospace; font-size: 11px; font-weight: 700;
+    letter-spacing: 2px; cursor: pointer; transition: all 0.2s;
+  }
+  .save-btn:hover { background: rgba(0,212,255,0.18); box-shadow: 0 0 16px rgba(0,212,255,0.15); }
+  .danger-btn {
+    display: block; width: 100%; max-width: 260px; margin: 10px auto 0;
+    padding: 7px 16px; background: rgba(255,68,68,0.08);
+    border: 1px solid rgba(255,68,68,0.25); border-radius: 4px;
+    color: var(--danger); font-family: 'Share Tech Mono', monospace;
+    font-size: 11px; cursor: pointer; letter-spacing: 1px; transition: all 0.2s;
+  }
+  .danger-btn:hover { background: rgba(255,68,68,0.16); }
+
+  /* ── ACHIEVEMENTS ── */
+  .achievements-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+  .ach-card {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 9px; padding: 16px; display: flex; gap: 12px; align-items: flex-start; transition: all 0.3s;
+  }
+  .ach-card.earned { border-color: var(--gold); background: rgba(255,215,0,0.025); box-shadow: 0 0 14px rgba(255,215,0,0.07); }
+  .ach-card.locked-ach { opacity: 0.35; filter: grayscale(1); }
+  .ach-icon { font-size: 30px; flex-shrink: 0; }
+  .ach-name { font-size: 13px; color: var(--text); font-weight: bold; margin-bottom: 4px; }
+  .ach-desc { font-size: 11px; color: var(--dim); line-height: 1.45; }
+  .ach-status { font-size: 10px; color: var(--gold); margin-top: 6px; letter-spacing: 1px; }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed; bottom: 20px; right: 20px;
+    background: var(--panel); border: 1px solid var(--accent2);
+    border-radius: 8px; padding: 12px 18px; z-index: 9998;
+    transform: translateX(120%); transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
+    max-width: 280px; box-shadow: 0 0 25px rgba(0,255,136,0.15);
+  }
+  .toast.show { transform: translateX(0); }
+  .toast-title { font-size: 11px; color: var(--accent2); font-weight: bold; margin-bottom: 3px; }
+  .toast-msg { font-size: 10px; color: var(--text); }
+
+  /* modal */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+    z-index: 1000; display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.2s;
+    backdrop-filter: blur(4px);
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal {
+    background: var(--panel); border: 1px solid var(--accent);
+    border-radius: 10px; padding: 20px; width: 90%; max-width: 420px;
+    box-shadow: 0 0 40px rgba(0,212,255,0.15);
+  }
+  .modal-title { font-family: 'Orbitron', monospace; font-size: 12px; color: var(--accent); letter-spacing: 2px; margin-bottom: 12px; }
+  .modal-textarea {
+    width: 100%; min-height: 100px; padding: 10px;
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 4px; color: var(--text);
+    font-family: 'Share Tech Mono', monospace; font-size: 11px;
+    resize: vertical; outline: none;
+  }
+  .modal-textarea:focus { border-color: var(--accent); }
+  .modal-actions { display: flex; gap: 8px; margin-top: 12px; justify-content: flex-end; }
+  .modal-btn {
+    padding: 7px 16px; font-family: 'Share Tech Mono', monospace;
+    font-size: 10px; border-radius: 4px; cursor: pointer; letter-spacing: 1px; transition: all 0.2s;
+  }
+  .modal-btn-save { background: rgba(0,212,255,0.1); border: 1px solid var(--accent); color: var(--accent); }
+  .modal-btn-save:hover { background: rgba(0,212,255,0.2); }
+  .modal-btn-cancel { background: none; border: 1px solid var(--border); color: var(--dim); }
+  .modal-btn-cancel:hover { border-color: var(--text); color: var(--text); }
+
+  @media (max-width: 600px) {
+    .header { flex-wrap: wrap; }
+    .header-title { font-size: 13px; }
+    .main { padding: 10px; }
+    .phase-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-title">Surya Learning DEV<span>SEC</span>OPS</div>
+  <div class="header-stats">
+    <div class="stat-pill"><span class="stat-label">LVL</span><span class="stat-value" id="stat-level">1</span></div>
+    <div class="stat-pill"><span class="stat-label">XP</span><span class="stat-value" id="stat-xp">0</span></div>
+    <div class="stat-pill"><span class="stat-label">SKILLS</span><span class="stat-value green" id="stat-skills">0/0</span></div>
+    <div class="stat-pill"><span class="stat-label">RANK</span><span class="stat-value gold" id="stat-rank">RECRUIT</span></div>
+    <div class="xp-bar-wrap">
+      <div class="xp-bar-label"><span>TO NEXT RANK</span><span id="xp-pct">0%</span></div>
+      <div class="xp-bar"><div class="xp-fill" id="xp-fill" style="width:0%"></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="nav-tabs">
+  <button class="nav-tab active" onclick="switchTab('tree',this)">[ SKILL TREE ]</button>
+  <button class="nav-tab" onclick="switchTab('projects',this)">[ PROJECTS ] <span class="tab-badge" id="proj-badge">0</span></button>
+  <button class="nav-tab" onclick="switchTab('leaderboard',this)">[ LEADERBOARD ]</button>
+  <button class="nav-tab" onclick="switchTab('achievements',this)">[ ACHIEVEMENTS ]</button>
+</div>
+
+<div class="main">
+
+  <!-- ── SKILL TREE ── -->
+  <div id="tab-tree" class="tab-content active">
+    <div class="section-intro">
+      ▶ All phases are open — learn in any order based on your interest. Click a phase header to expand skills. Check off each skill as you complete it to earn XP.
+    </div>
+    <div class="filter-bar">
+      <input type="text" class="search-box" placeholder="🔍 search skills..." oninput="filterSkills(this.value)" id="skill-search">
+      <button class="filter-btn active" onclick="setFilter('all',this)">ALL</button>
+      <button class="filter-btn" onclick="setFilter('todo',this)">TODO</button>
+      <button class="filter-btn" onclick="setFilter('done',this)">DONE</button>
+      <button class="filter-btn" onclick="setFilter('inprogress',this)">IN PROGRESS</button>
+    </div>
+    <div class="phase-grid" id="phase-grid"></div>
+  </div>
+
+  <!-- ── PROJECTS ── -->
+  <div id="tab-projects" class="tab-content">
+    <div class="section-intro">
+      ▶ Track every project you build. Log what you completed, which phase it covers, and what tech you used. This becomes your portfolio evidence.
+    </div>
+    <div class="proj-stats-row">
+      <div class="proj-stat-box"><div class="proj-stat-val" id="proj-total" style="color:var(--accent)">0</div><div class="proj-stat-lbl">TOTAL</div></div>
+      <div class="proj-stat-box"><div class="proj-stat-val" id="proj-done" style="color:var(--accent2)">0</div><div class="proj-stat-lbl">COMPLETED</div></div>
+      <div class="proj-stat-box"><div class="proj-stat-val" id="proj-inprog" style="color:var(--accent)">0</div><div class="proj-stat-lbl">IN PROGRESS</div></div>
+    </div>
+    <div class="projects-layout">
+      <div class="project-cards" id="project-list"></div>
+      <div class="add-project-panel">
+        <div class="form-title">⊕ ADD PROJECT</div>
+        <div class="form-group">
+          <label class="form-label">PROJECT NAME</label>
+          <input class="form-input" id="proj-name" placeholder="e.g. 3-Tier AWS with Terraform">
+        </div>
+        <div class="form-group">
+          <label class="form-label">PHASE / CATEGORY</label>
+          <select class="form-select" id="proj-phase">
+            <option value="Phase 0">Phase 0: Foundations</option>
+            <option value="Phase 1">Phase 1: Linux</option>
+            <option value="Phase 2">Phase 2: Programming</option>
+            <option value="Phase 3">Phase 3: Git</option>
+            <option value="Phase 4">Phase 4: AWS</option>
+            <option value="Phase 5">Phase 5: IaC (Terraform/Ansible)</option>
+            <option value="Phase 6">Phase 6: Docker</option>
+            <option value="Phase 7">Phase 7: Kubernetes</option>
+            <option value="Phase 8">Phase 8: CI/CD</option>
+            <option value="Phase 9">Phase 9: GitOps</option>
+            <option value="Phase 10">Phase 10: Monitoring</option>
+            <option value="Phase 11">Phase 11: Security</option>
+            <option value="Phase 12">Phase 12: Capstone</option>
+            <option value="Phase 13">Phase 13: Soft Skills</option>
+            <option value="Phase 14">Phase 14: Interview Prep</option>
+            <option value="Multi-Phase">Multi-Phase Project</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">STATUS</label>
+          <select class="form-select" id="proj-status-input">
+            <option value="todo">To Do</option>
+            <option value="inprogress">In Progress</option>
+            <option value="done">Completed</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">TECH USED (comma separated)</label>
+          <input class="form-input" id="proj-tech" placeholder="e.g. Terraform, AWS, Nginx">
+        </div>
+        <div class="form-group">
+          <label class="form-label">DESCRIPTION</label>
+          <textarea class="form-textarea" id="proj-desc" placeholder="What did you build? What did you learn?"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">GITHUB / LINK (optional)</label>
+          <input class="form-input" id="proj-link" placeholder="https://github.com/...">
+        </div>
+        <button class="form-btn" onclick="addProject()">⊕ ADD TO PORTFOLIO</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── LEADERBOARD ── -->
+  <div id="tab-leaderboard" class="tab-content">
+    <div class="leaderboard-panel">
+      <div class="lb-header">◈ PERSONAL LEADERBOARD ◈</div>
+      <div class="lb-section">
+        <div class="lb-section-title">▸ Best Sessions (sorted by XP)</div>
+        <div id="lb-list"></div>
+      </div>
+      <div class="lb-section">
+        <div class="lb-section-title">▸ Current Session</div>
+        <div id="current-session"></div>
+      </div>
+      <button class="save-btn" onclick="saveToLeaderboard()">⊕ SAVE CURRENT SESSION</button>
+      <button class="danger-btn" onclick="clearLeaderboard()">⊘ CLEAR HISTORY</button>
+    </div>
+  </div>
+
+  <!-- ── ACHIEVEMENTS ── -->
+  <div id="tab-achievements" class="tab-content">
+    <div class="section-intro">▶ Achievements unlock automatically as you complete skills and projects.</div>
+    <div class="achievements-grid" id="ach-grid"></div>
+  </div>
+</div>
+
+<!-- Note modal -->
+<div class="modal-overlay" id="note-modal">
+  <div class="modal">
+    <div class="modal-title">✏️ PROJECT NOTES</div>
+    <textarea class="modal-textarea" id="note-text" placeholder="Add notes, learnings, issues faced..."></textarea>
+    <div class="modal-actions">
+      <button class="modal-btn modal-btn-cancel" onclick="closeNoteModal()">CANCEL</button>
+      <button class="modal-btn modal-btn-save" onclick="saveNote()">SAVE NOTE</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">
+  <div class="toast-title" id="toast-title"></div>
+  <div class="toast-msg" id="toast-msg"></div>
+</div>
+
+<script>
+// ============================================================
+// DATA
+// ============================================================
+const PHASES = [
+  { id: 0, icon: '⚡', name: 'Phase 0: Absolute Foundations', hours: 15, color: '#00d4ff',
+    skills: ['How computers work (CPU, RAM, Storage)', 'Operating System basics', 'Processes vs Threads', 'File systems (ext4, NTFS)', 'Client-Server architecture', 'What is an API', 'OSI Model (7 layers)', 'TCP/IP Model (practical focus)', 'IP Addressing & CIDR Notation', 'TCP vs UDP & 3-Way Handshake', 'DNS resolution flow', 'HTTP/HTTPS (methods, status codes)', 'SSL/TLS encryption basics', 'Firewalls, NAT, Load Balancing concepts', 'SSH key-based authentication']
+  },
+  { id: 1, icon: '🐧', name: 'Phase 1: Linux Mastery', hours: 90, color: '#ff6b35',
+    skills: ['Linux distributions & installation (Ubuntu/WSL2)', 'File system hierarchy (/etc /var /home /opt)', 'Basic commands (ls, cd, grep, awk, sed, cut)', 'File permissions (chmod, chown, octal notation)', 'Users, Groups, sudo, visudo', 'Package management (apt, yum, dnf)', 'systemctl service management', 'Process management (ps, top, htop, kill, nohup)', 'Disk management (df, du, lsblk, mount)', 'Log management (/var/log, journalctl, syslog)', 'Cron jobs & scheduling (crontab syntax)', 'Networking commands (ip, netstat, ss, curl, dig)', 'SSH keys (ssh-keygen, ssh-copy-id, config, tunneling)', 'Firewall (iptables basics, ufw)', 'Nginx install & configuration', 'Virtual hosts & reverse proxy (Nginx)', 'SSL/TLS with Let\'s Encrypt (certbot)', 'Shell scripting: variables, conditionals, loops', 'Shell scripting: functions, exit codes, arrays', 'Error handling (set -e, set -o pipefail, trap)', 'Practical scripts: backup, disk alert, health check']
+  },
+  { id: 2, icon: '🐍', name: 'Phase 2: Programming', hours: 60, color: '#b44fff',
+    skills: ['Python basics (variables, types, operators)', 'Strings, Lists, Tuples, Dicts, Sets', 'Conditionals, Loops, Functions & Modules', 'File handling (read, write, CSV, JSON, YAML)', 'Error handling (try/except)', 'OS module (os, subprocess, shutil)', 'Requests library for API calls', 'Boto3 EC2 & S3 operations', 'Boto3 IAM & Lambda invocation', 'Regular expressions (re module)', 'Virtual environments (venv, pip)', 'Basic OOP (classes, objects)', 'FastAPI or Flask REST API basics', 'YAML syntax (anchors, aliases, multi-line)', 'JSON syntax & YAML vs JSON comparison']
+  },
+  { id: 3, icon: '🌿', name: 'Phase 3: Version Control', hours: 25, color: '#00ff88',
+    skills: ['Git init, clone, add, commit, status, log', '.gitignore', 'Branching (create, switch, delete)', 'Merging (fast-forward, 3-way) & conflict resolution', 'Rebasing (rebase vs merge)', 'Git stash, cherry-pick, reset, revert', 'Tags (lightweight & annotated)', 'Remote repos (push, pull, fetch)', 'Pull Requests & code review process', 'GitFlow & trunk-based development', 'Protected branches & CODEOWNERS', 'Signed commits (GPG)', 'Pre-commit hooks & secret scanning']
+  },
+  { id: 4, icon: '☁️', name: 'Phase 4: AWS Cloud', hours: 220, color: '#ff9500',
+    skills: ['AWS Global Infrastructure (Regions, AZs, Edge)', 'IAM users, groups, roles & policies', 'Least privilege, MFA, Access keys vs Roles', 'STS & AssumeRole, cross-account access', 'EC2: instance types, AMIs, key pairs', 'EC2: Security Groups, Elastic IPs, User Data', 'Auto Scaling Groups & Launch Templates', 'Lambda: triggers, layers, cold start', 'VPC: CIDR, public/private subnets, IGW', 'VPC: NAT Gateway, route tables, Flow Logs', 'Network ACLs vs Security Groups', 'VPC Peering & Endpoints', 'Route53 DNS, hosted zones, routing policies', 'ALB (Layer 7) & NLB (Layer 4)', 'S3: buckets, policies, versioning, lifecycle', 'S3: encryption (SSE-S3, SSE-KMS), pre-signed URLs', 'S3: cross-region replication, event notifications', 'EBS volume types, snapshots, encryption', 'RDS: multi-AZ, read replicas, automated backups', 'DynamoDB & ElastiCache basics', 'KMS key management & envelope encryption', 'Secrets Manager & ACM certificates', 'CloudTrail (API audit) & AWS Config (compliance)', 'GuardDuty, Security Hub, WAF, Inspector', 'CloudWatch: metrics, alarms, log groups, dashboards', 'SNS, SQS, CloudFormation basics', 'ECR & ECS basics', 'Systems Manager (Parameter Store, Session Manager)', 'DR strategies: RPO/RTO, Pilot Light, Warm Standby', 'AWS Organizations, OUs, SCPs, Control Tower',
+      '3-tier architecture pattern (web/app/data layers)', 'Microservices vs Monolith trade-offs', 'Event-driven architecture & queue-based processing',
+      'FinOps: AWS Cost Explorer & Cost Allocation Tags', 'FinOps: Rightsizing EC2 instances', 'FinOps: Spot instance strategy & savings plans', 'FinOps: Budget alarms & cost anomaly detection']
+  },
+  { id: 5, icon: '🏗️', name: 'Phase 5: Infrastructure as Code', hours: 120, color: '#26a69a',
+    skills: ['IaC concepts (declarative vs imperative)', 'Terraform installation & HCL syntax', 'Resources, variables, outputs, data sources, locals', 'terraform init, plan, apply, destroy', 'Remote state with S3 + DynamoDB locking', 'State commands (list, show, mv, rm, import)', 'Terraform modules (structure, registry, versioning)', 'Workspaces, count, for_each', 'Dynamic blocks & conditional expressions', 'Built-in functions (lookup, merge, join, split)', 'Lifecycle rules (create_before_destroy, prevent_destroy)', 'Terragrunt basics', 'Terraform testing (terraform test, terratest)', 'Ansible agentless architecture & inventory', 'Ansible playbooks & ad-hoc commands', 'Modules: apt, yum, copy, file, service, template', 'Variables, facts, handlers, Jinja2 templates', 'Conditionals, loops, tags', 'Ansible Roles & Galaxy', 'Ansible Vault for secrets', 'Dynamic inventory (AWS EC2)']
+  },
+  { id: 6, icon: '🐳', name: 'Phase 6: Containers', hours: 60, color: '#0db7ed',
+    skills: ['Containers vs VMs', 'Docker architecture (daemon, client, registry)', 'docker run, ps, stop, exec, logs, inspect', 'Port mapping, volume mounting, env vars, detached mode', 'Dockerfile: FROM, RUN, CMD, ENTRYPOINT', 'COPY vs ADD, WORKDIR, EXPOSE, ENV, ARG', 'USER (non-root), HEALTHCHECK', 'Multi-stage builds (critical for security!)', 'Minimal base images (alpine, distroless, scratch)', '.dockerignore & layer caching optimization', 'Docker networking (bridge, host, none, custom)', 'Container-to-container DNS resolution', 'Docker volumes vs bind mounts vs tmpfs', 'Docker Compose: services, networks, volumes', 'docker compose up/down/build/logs', 'Container security: run as non-root', 'Read-only filesystem & drop capabilities', 'No privileged containers, resource limits', 'No secrets in Dockerfile/layers', 'AWS ECR: create repo, push/pull, lifecycle, scanning']
+  },
+  { id: 7, icon: '☸️', name: 'Phase 7: Kubernetes', hours: 190, color: '#326ce5',
+    skills: ['K8s architecture (API Server, etcd, kubelet)', 'kubectl installation & kubeconfig', 'Namespaces', 'Pods (single & multi-container)', 'ReplicaSets & Deployments (rolling updates, rollbacks)', 'DaemonSets, StatefulSets, Jobs, CronJobs', 'Services: ClusterIP, NodePort, LoadBalancer', 'Ingress controller (Nginx), TLS termination', 'Path-based & host-based routing', 'Network Policies (default deny, namespace isolation)', 'DNS in Kubernetes (CoreDNS)', 'Volumes (emptyDir, hostPath), PV, PVC, StorageClasses', 'ConfigMaps (mount as volume & env)', 'Secrets (base64 ≠ encryption!)', 'Resource Requests & Limits, LimitRanges, ResourceQuotas', 'Node affinity, taints & tolerations', 'HPA, VPA, Cluster Autoscaler', 'Liveness, Readiness, Startup probes', 'RBAC: Roles, ClusterRoles, RoleBindings', 'Pod Security Standards (Restricted/Baseline/Privileged)', 'Security Contexts (runAsNonRoot, drop ALL caps, seccomp)', 'External Secrets Operator & Sealed Secrets', 'HashiCorp Vault Kubernetes integration', 'Image digest pinning & admission controllers', 'kube-bench CIS Benchmark', 'Falco runtime security & custom rules', 'OPA Gatekeeper ConstraintTemplates & Constraints', 'Kyverno policies (validate, mutate, generate)', 'Helm: install, upgrade, rollback, custom charts, Helmfile', 'Istio: mTLS, traffic splitting, circuit breaking', 'EKS with eksctl & Terraform', 'EKS IRSA, managed node groups, add-ons', 'Velero backup & restore']
+  },
+  { id: 8, icon: '🔄', name: 'Phase 8: CI/CD Pipelines', hours: 70, color: '#f05032',
+    skills: ['CI/CD concepts & pipeline stages', 'Blue/Green, Canary, Rolling deployments', 'Feature flags concept', 'GitHub Actions workflow YAML & triggers', 'Jobs, steps, runners (hosted vs self-hosted)', 'Actions marketplace & matrix builds', 'Caching, artifacts, environments & approvals', 'OIDC with AWS (keyless authentication!)', 'Reusable workflows & composite actions', 'Full pipeline: Build→Test→Scan→Docker→ECR→K8s', 'GitLab CI: stages, jobs, runners, variables', 'GitLab artifacts, environments, include templates', 'Jenkins architecture & Jenkinsfile (declarative)', 'Jenkins shared libraries, multi-branch pipelines', 'Jenkins agents (Docker, K8s)']
+  },
+  { id: 9, icon: '🔁', name: 'Phase 9: GitOps', hours: 30, color: '#fc6d26',
+    skills: ['GitOps principles (declarative, version-controlled, pull-based)', 'Push-based vs Pull-based GitOps', 'ArgoCD architecture & K8s installation', 'Application CRD, sync policies (manual/auto)', 'Self-heal & auto-prune', 'App of Apps pattern & ApplicationSets', 'Multi-cluster deployment', 'RBAC & SSO in ArgoCD', 'Rollback & health checks in ArgoCD', 'Secrets management with ArgoCD (ESO, Vault plugin)', 'Multi-environment GitOps (dev/staging/prod)']
+  },
+  { id: 10, icon: '📊', name: 'Phase 10: Monitoring & Observability', hours: 60, color: '#e6522c',
+    skills: ['Observability: Metrics, Logs, Traces', 'Golden signals & RED/USE methods', 'SLI, SLO, SLA concepts', 'Prometheus architecture (server, exporters, alertmanager)', 'Metric types (counter, gauge, histogram, summary)', 'PromQL: rate(), sum(), avg(), aggregations', 'Service discovery & scrape configuration', 'Recording rules & alerting rules', 'Node Exporter & kube-state-metrics', 'Prometheus Operator (ServiceMonitor, PodMonitor)', 'Grafana dashboards, panels, variables', 'Grafana alerting & dashboard-as-code', 'AlertManager: routing, receivers, grouping, silencing', 'ELK/EFK stack (Elasticsearch, Fluent Bit, Kibana)', 'CloudWatch Logs & Log Insights', 'OpenTelemetry & Jaeger distributed tracing']
+  },
+  { id: 11, icon: '🔒', name: 'Phase 11: Security (DevSecOps Core)', hours: 165, color: '#ff4444',
+    skills: ['Shift-Left Security mindset', 'Zero Trust & Defense in Depth', 'CIA Triad & Least Privilege Principle', 'Encryption (AES, RSA, SHA-256, bcrypt)', 'PKI, SSL/TLS handshake, Digital certificates', 'OAuth 2.0, OIDC, JWT, SAML basics', 'OWASP Top 10 (2021) — all 10 items', 'SQL Injection & Command Injection prevention', 'SSRF (Server-Side Request Forgery)', 'Security Misconfiguration & Insecure Design', 'SonarQube: install, quality gates, CI integration', 'SonarQube PR decoration & branch analysis', 'Semgrep custom rules & OWASP ruleset', 'Snyk CLI: scan code, dependencies, containers, IaC', 'OWASP Dependency-Check & Dependabot', 'CVE severity levels & CVSS scoring', 'GitLeaks: pre-commit hook & CI pipeline', 'TruffleHog: git history scanning', 'Rotate exposed secrets after detection', 'Trivy: image, filesystem, IaC scanning', 'Trivy SBOM generation & .trivyignore', 'Grype SBOM-based scanning', 'Container hardening checklist', 'Image signing with Cosign (keyless OIDC)', 'Syft SBOM (SPDX & CycloneDX formats)', 'Checkov: Terraform, K8s, Dockerfile scanning', 'tfsec custom rules & CI integration', 'DAST with OWASP ZAP (baseline scan)', 'ZAP full scan, API scanning & CI integration', 'HashiCorp Vault: architecture & secret engines', 'Vault KV, AWS, Database, PKI, Transit engines', 'Vault auth: AppRole, K8s auth, AWS IAM', 'Vault Agent & sidecar injector for K8s', 'External Secrets Operator with AWS Secrets Manager', 'kube-bench CIS Kubernetes Benchmark', 'kubescape NSA/CISA hardening + MITRE ATT&CK', 'Falco: runtime rules, alerts, Sidekick', 'OPA Gatekeeper: block privileged, enforce registry', 'Prowler AWS security assessment', 'CIS Benchmarks & compliance as code', 'STRIDE threat modeling methodology', 'CloudTrail suspicious event detection', 'K8s audit log analysis',
+      'API Security: Rate limiting & throttling', 'API Security: API keys vs OAuth 2.0', 'API Security: JWT best practices (expiry, signing, validation)', 'API Security: OWASP API Top 10 awareness']
+  },
+  { id: 12, icon: '🏆', name: 'Phase 12: Capstone Pipeline', hours: 85, color: '#ffd700',
+    skills: ['Pre-commit: GitLeaks + linting hooks', 'CI: Secret scan (GitLeaks/TruffleHog)', 'CI: Lint (hadolint, yamllint, shellcheck, tflint)', 'CI: SAST (SonarQube/Semgrep)', 'CI: SCA (Snyk/OWASP Dependency-Check)', 'CI: Unit tests + code coverage gate', 'CI: Secure Docker build (multi-stage, non-root)', 'CI: Image scan (Trivy — fail on CRITICAL)', 'CI: SBOM generation (Syft)', 'CI: Image signing (Cosign keyless)', 'CI: Push to ECR', 'IaC: terraform fmt + validate + tflint', 'IaC: Checkov scan + fail on HIGH', 'IaC: terraform plan in PR + apply gate', 'CD: ArgoCD auto-sync', 'CD: OPA Gatekeeper admission control', 'CD: Health checks & auto-rollback', 'Post-deploy: OWASP ZAP DAST on staging', 'Post-deploy: Falco runtime monitoring', 'Post-deploy: Prometheus + Grafana dashboards', 'Post-deploy: ELK/Loki logging pipeline', 'Post-deploy: kube-bench scheduled compliance', 'Pipeline hardening: OIDC, pinned actions, least privilege', 'Audit trail for all deployments']
+  },
+  { id: 13, icon: '🤝', name: 'Phase 13: Soft Skills & Practices', hours: 25, color: '#8b949e',
+    skills: ['Shift-Left Security culture & security champions', 'Blameless postmortems', 'Incident classification (P1-P4)', 'Incident response: Detection→Triage→Containment→Recovery', 'Root Cause Analysis & 5 Whys technique', 'Runbooks & playbooks', 'Architecture Decision Records (ADRs)', 'Diagrams as code (Mermaid, draw.io)', 'Chaos engineering principles & steady state hypothesis', 'Litmus Chaos (K8s native) & AWS FIS']
+  },
+  { id: 14, icon: '🎯', name: 'Phase 14: Interview Prep', hours: 50, color: '#58a6ff',
+    skills: ['GitHub portfolio with all project types', 'Architecture diagram for capstone project', 'Scenario: Design a secure CI/CD pipeline', 'Scenario: Handle a secret leak in git', 'Scenario: Multi-account AWS architecture design', 'Scenario: Zero-downtime deployment strategy', 'Troubleshoot: Pod not starting in K8s', 'Troubleshoot: High latency in application', 'Deep dive: Kubernetes networking explained', 'Deep dive: Terraform state management', 'Deep dive: SSL/TLS handshake', 'Deep dive: ArgoCD sync mechanism', 'Deep dive: Prometheus architecture', 'Security: OWASP Top 10 explanation', 'Security: Secure a K8s cluster walkthrough', 'Security: SBOM & supply chain security', 'Security: Zero trust architecture', 'Certifications plan (CKA, SAA-C03, Terraform Assoc)']
+  }
+];
+
+const RANKS = [
+  { min: 0, name: 'RECRUIT', color: '#6e7681' },
+  { min: 500, name: 'APPRENTICE', color: '#58a6ff' },
+  { min: 1500, name: 'ENGINEER', color: '#00d4ff' },
+  { min: 3500, name: 'SPECIALIST', color: '#00ff88' },
+  { min: 7000, name: 'EXPERT', color: '#b44fff' },
+  { min: 12000, name: 'ARCHITECT', color: '#ff9500' },
+  { min: 18000, name: 'OPERATOR', color: '#ff6b35' },
+  { min: 24000, name: 'GUARDIAN', color: '#ff4444' },
+  { min: 30000, name: 'MASTER', color: '#ffd700' }
+];
+
+const ACHIEVEMENTS = [
+  { id: 'first_skill', icon: '🌱', name: 'First Step', desc: 'Complete your first skill', check: (s) => s.total >= 1 },
+  { id: 'phase0', icon: '⚡', name: 'Foundations Laid', desc: 'Complete Phase 0', check: (s) => s.phasesDone.includes(0) },
+  { id: 'linux_hero', icon: '🐧', name: 'Linux Hero', desc: 'Complete Phase 1 (Linux Mastery)', check: (s) => s.phasesDone.includes(1) },
+  { id: 'code_wizard', icon: '🐍', name: 'Code Wizard', desc: 'Complete Phase 2 (Programming)', check: (s) => s.phasesDone.includes(2) },
+  { id: 'cloud_init', icon: '☁️', name: 'Cloud Native', desc: 'Complete Phase 4 (AWS)', check: (s) => s.phasesDone.includes(4) },
+  { id: 'iac_master', icon: '🏗️', name: 'IaC Master', desc: 'Complete Phase 5 (Terraform/Ansible)', check: (s) => s.phasesDone.includes(5) },
+  { id: 'container_master', icon: '🐳', name: 'Container Master', desc: 'Complete Phase 6 (Docker)', check: (s) => s.phasesDone.includes(6) },
+  { id: 'k8s_pilot', icon: '☸️', name: 'Kube Pilot', desc: 'Complete Phase 7 (Kubernetes)', check: (s) => s.phasesDone.includes(7) },
+  { id: 'pipeline_engineer', icon: '🔄', name: 'Pipeline Engineer', desc: 'Complete Phase 8 (CI/CD)', check: (s) => s.phasesDone.includes(8) },
+  { id: 'gitops_guru', icon: '🔁', name: 'GitOps Guru', desc: 'Complete Phase 9 (GitOps)', check: (s) => s.phasesDone.includes(9) },
+  { id: 'security_first', icon: '🔒', name: 'Security First', desc: 'Complete Phase 11 (Security)', check: (s) => s.phasesDone.includes(11) },
+  { id: 'pipeline_built', icon: '🏆', name: 'Pipeline Complete', desc: 'Complete Phase 12 (Capstone)', check: (s) => s.phasesDone.includes(12) },
+  { id: 'first_project', icon: '📁', name: 'Project Initiated', desc: 'Add your first project', check: (s) => s.projectsTotal >= 1 },
+  { id: 'five_projects', icon: '📂', name: 'Builder', desc: 'Complete 5 projects', check: (s) => s.projectsDone >= 5 },
+  { id: 'fifty_skills', icon: '🎖️', name: 'Half Century', desc: 'Complete 50 skills', check: (s) => s.total >= 50 },
+  { id: 'hundred_skills', icon: '💯', name: 'Century', desc: 'Complete 100 skills', check: (s) => s.total >= 100 },
+  { id: 'two_hundred', icon: '🌠', name: 'Grinder', desc: 'Complete 200 skills', check: (s) => s.total >= 200 },
+  { id: 'all_phases', icon: '🌟', name: 'DevSecOps Master', desc: 'Complete ALL 15 phases', check: (s) => s.phasesDone.length >= 15 }
+];
+
+const PHASE_COLORS = ['#00d4ff','#ff6b35','#b44fff','#00ff88','#ff9500','#26a69a','#0db7ed','#326ce5','#f05032','#fc6d26','#e6522c','#ff4444','#ffd700','#8b949e','#58a6ff'];
+
+// ============================================================
+// STATE
+// ============================================================
+let state = {
+  completed: {},
+  earnedAch: [],
+  projects: [],
+  sessionStart: Date.now()
+};
+
+let currentFilter = 'all';
+let noteEditId = null;
+
+function loadState() {
+  try { const s = localStorage.getItem('dso_v2'); if (s) state = { ...state, ...JSON.parse(s) }; } catch(e) {}
+}
+function saveState() {
+  try { localStorage.setItem('dso_v2', JSON.stringify(state)); } catch(e) {}
+}
+
+function getStats() {
+  let total = 0, totalSkills = 0, xp = 0;
+  const phasesDone = [];
+  PHASES.forEach(p => {
+    totalSkills += p.skills.length;
+    let done = 0;
+    p.skills.forEach((_, i) => { if (state.completed[`${p.id}-${i}`]) { done++; total++; xp += 10 * (p.id + 1); } });
+    if (done === p.skills.length) phasesDone.push(p.id);
+  });
+  const projectsTotal = state.projects.length;
+  const projectsDone = state.projects.filter(p => p.status === 'done').length;
+  return { total, totalSkills, xp, phasesDone, projectsTotal, projectsDone };
+}
+
+function getRank(xp) {
+  for (let i = RANKS.length - 1; i >= 0; i--) { if (xp >= RANKS[i].min) return RANKS[i]; }
+  return RANKS[0];
+}
+
+// ============================================================
+// RENDER HEADER
+// ============================================================
+function renderHeader() {
+  const s = getStats();
+  const level = Math.floor(s.xp / 500) + 1;
+  const rank = getRank(s.xp);
+  const nextRank = RANKS.find(r => r.min > s.xp) || RANKS[RANKS.length-1];
+  const pct = nextRank.min === rank.min ? 100 : Math.round((s.xp - rank.min) / (nextRank.min - rank.min) * 100);
+  document.getElementById('stat-level').textContent = level;
+  document.getElementById('stat-xp').textContent = s.xp.toLocaleString();
+  document.getElementById('stat-skills').textContent = `${s.total}/${s.totalSkills}`;
+  document.getElementById('stat-rank').textContent = rank.name;
+  document.getElementById('stat-rank').style.color = rank.color;
+  document.getElementById('xp-pct').textContent = pct + '%';
+  document.getElementById('xp-fill').style.width = pct + '%';
+  document.getElementById('proj-badge').textContent = state.projects.length;
+}
+
+// ============================================================
+// RENDER PHASE GRID
+// ============================================================
+function renderPhaseGrid() {
+  const grid = document.getElementById('phase-grid');
+  grid.innerHTML = '';
+  PHASES.forEach(phase => {
+    let doneCnt = 0;
+    phase.skills.forEach((_, i) => { if (state.completed[`${phase.id}-${i}`]) doneCnt++; });
+    const pct = Math.round(doneCnt / phase.skills.length * 100);
+    const completed = doneCnt === phase.skills.length;
+    const inProgress = doneCnt > 0 && !completed;
+
+    const card = document.createElement('div');
+    card.className = `phase-card ${completed ? 'completed' : ''}`;
+    card.id = `phase-${phase.id}`;
+    card.dataset.doneCnt = doneCnt;
+    card.dataset.total = phase.skills.length;
+    card.dataset.inProgress = inProgress ? '1' : '0';
+
+    card.innerHTML = `
+      <div class="phase-header" onclick="togglePhase(${phase.id})">
+        <div class="phase-icon" style="background:${phase.color}22;border:1px solid ${phase.color}44">${phase.icon}</div>
+        <div class="phase-info">
+          <div class="phase-name" style="color:${phase.color}">${phase.name}</div>
+          <div class="phase-meta">
+            <span class="phase-hours">~${phase.hours}h</span>
+            <span class="phase-progress-text">${doneCnt}/${phase.skills.length} (${pct}%)</span>
+          </div>
+          <div class="phase-progress-bar">
+            <div class="phase-progress-fill" style="width:${pct}%;background:${phase.color}"></div>
+          </div>
+        </div>
+        <div class="phase-toggle" id="toggle-${phase.id}">▶</div>
+      </div>
+      <div class="skills-list" id="skills-${phase.id}">
+        ${phase.skills.map((skill, i) => {
+          const done = !!state.completed[`${phase.id}-${i}`];
+          return `<div class="skill-item ${done ? 'done' : ''}" onclick="toggleSkill(${phase.id},${i})">
+            <div class="skill-checkbox">${done ? '✓' : ''}</div>
+            <div class="skill-name">${skill}</div>
+            <div class="skill-xp">+${10*(phase.id+1)} XP</div>
+          </div>`;
+        }).join('')}
+      </div>`;
+    grid.appendChild(card);
+  });
+  applyFilter();
+}
+
+// ============================================================
+// FILTER / SEARCH
+// ============================================================
+function setFilter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  applyFilter();
+}
+
+function applyFilter() {
+  const search = (document.getElementById('skill-search')?.value || '').toLowerCase();
+  document.querySelectorAll('.phase-card').forEach(card => {
+    const done = parseInt(card.dataset.doneCnt);
+    const total = parseInt(card.dataset.total);
+    const inProgress = card.dataset.inProgress === '1';
+    let visible = true;
+    if (currentFilter === 'done' && done !== total) visible = false;
+    if (currentFilter === 'todo' && done !== 0) visible = false;
+    if (currentFilter === 'inprogress' && !inProgress) visible = false;
+    if (search) {
+      const phaseText = card.textContent.toLowerCase();
+      visible = visible && phaseText.includes(search);
+    }
+    card.classList.toggle('hidden', !visible);
+    if (search && visible) {
+      const list = card.querySelector('.skills-list');
+      const toggle = card.querySelector('.phase-toggle');
+      list.classList.add('open'); toggle.classList.add('open');
+    }
+  });
+}
+
+function filterSkills(val) { applyFilter(); }
+
+// ============================================================
+// SKILL TOGGLE
+// ============================================================
+function togglePhase(id) {
+  const list = document.getElementById(`skills-${id}`);
+  const toggle = document.getElementById(`toggle-${id}`);
+  const open = list.classList.contains('open');
+  list.classList.toggle('open', !open);
+  toggle.classList.toggle('open', !open);
+}
+
+function toggleSkill(phaseId, skillIdx) {
+  const key = `${phaseId}-${skillIdx}`;
+  const wasDone = !!state.completed[key];
+  state.completed[key] = !wasDone;
+  saveState();
+
+  // Update skill item
+  const skillItem = document.querySelector(`#skills-${phaseId} .skill-item:nth-child(${skillIdx + 1})`);
+  if (skillItem) {
+    skillItem.className = `skill-item ${!wasDone ? 'done' : ''}`;
+    skillItem.querySelector('.skill-checkbox').textContent = !wasDone ? '✓' : '';
+  }
+
+  // Update phase card
+  const phase = PHASES[phaseId];
+  let doneCnt = 0;
+  phase.skills.forEach((_, i) => { if (state.completed[`${phaseId}-${i}`]) doneCnt++; });
+  const pct = Math.round(doneCnt / phase.skills.length * 100);
+  const card = document.getElementById(`phase-${phaseId}`);
+  if (card) {
+    card.querySelector('.phase-progress-text').textContent = `${doneCnt}/${phase.skills.length} (${pct}%)`;
+    card.querySelector('.phase-progress-fill').style.width = pct + '%';
+    card.dataset.doneCnt = doneCnt;
+    card.dataset.inProgress = (doneCnt > 0 && doneCnt < phase.skills.length) ? '1' : '0';
+    card.classList.toggle('completed', doneCnt === phase.skills.length);
+  }
+
+  renderHeader();
+  if (!wasDone) {
+    showToast(`+${10*(phaseId+1)} XP`, phase.skills[skillIdx]);
+    checkAchievements();
+  }
+  renderAchievements();
+}
+
+// ============================================================
+// PROJECTS
+// ============================================================
+function addProject() {
+  const name = document.getElementById('proj-name').value.trim();
+  if (!name) { showToast('⚠️ Missing', 'Project name is required'); return; }
+
+  const proj = {
+    id: Date.now().toString(),
+    name,
+    phase: document.getElementById('proj-phase').value,
+    status: document.getElementById('proj-status-input').value,
+    tech: document.getElementById('proj-tech').value.split(',').map(t => t.trim()).filter(Boolean),
+    desc: document.getElementById('proj-desc').value.trim(),
+    link: document.getElementById('proj-link').value.trim(),
+    note: '',
+    addedAt: new Date().toLocaleDateString()
+  };
+  state.projects.unshift(proj);
+  saveState();
+
+  // Clear form
+  ['proj-name','proj-tech','proj-desc','proj-link'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('proj-status-input').value = 'todo';
+
+  renderProjects();
+  renderHeader();
+  checkAchievements();
+  showToast('📁 Project Added', proj.name);
+}
+
+function cycleStatus(id) {
+  const proj = state.projects.find(p => p.id === id);
+  if (!proj) return;
+  const cycle = { todo: 'inprogress', inprogress: 'done', done: 'todo' };
+  proj.status = cycle[proj.status];
+  saveState();
+  renderProjects();
+  renderHeader();
+  checkAchievements();
+  renderAchievements();
+  showToast('📝 Status Updated', `${proj.name} → ${proj.status.toUpperCase()}`);
+}
+
+function deleteProject(id) {
+  if (!confirm('Remove this project?')) return;
+  state.projects = state.projects.filter(p => p.id !== id);
+  saveState();
+  renderProjects();
+  renderHeader();
+  showToast('🗑️ Removed', 'Project deleted');
+}
+
+function openNoteModal(id) {
+  const proj = state.projects.find(p => p.id === id);
+  if (!proj) return;
+  noteEditId = id;
+  document.getElementById('note-text').value = proj.note || '';
+  document.getElementById('note-modal').classList.add('open');
+}
+function closeNoteModal() { document.getElementById('note-modal').classList.remove('open'); noteEditId = null; }
+function saveNote() {
+  if (!noteEditId) return;
+  const proj = state.projects.find(p => p.id === noteEditId);
+  if (proj) { proj.note = document.getElementById('note-text').value.trim(); saveState(); renderProjects(); showToast('✅ Note Saved', proj.name); }
+  closeNoteModal();
+}
+
+function renderProjects() {
+  const list = document.getElementById('project-list');
+  const s = getStats();
+  const inProg = state.projects.filter(p => p.status === 'inprogress').length;
+  document.getElementById('proj-total').textContent = state.projects.length;
+  document.getElementById('proj-done').textContent = s.projectsDone;
+  document.getElementById('proj-inprog').textContent = inProg;
+
+  if (state.projects.length === 0) {
+    list.innerHTML = `<div class="empty-projects">
+      🏗️<br>No projects yet.<br>Add your first project using the form →<br><span style="font-size:10px;color:var(--dim)">Every project you build is portfolio evidence</span>
+    </div>`;
+    return;
+  }
+
+  const statusLabel = { todo: 'TO DO', inprogress: 'IN PROGRESS', done: 'COMPLETED' };
+  const statusColor = { todo: 'var(--dim)', inprogress: 'var(--accent)', done: 'var(--accent2)' };
+
+  list.innerHTML = state.projects.map(proj => {
+    const phaseIdx = PHASES.findIndex(p => proj.phase.startsWith(p.name.split(':')[0]));
+    const color = phaseIdx >= 0 ? PHASE_COLORS[phaseIdx] : '#58a6ff';
+    return `<div class="project-card" id="proj-${proj.id}">
+      <div class="project-card-header">
+        <div class="project-status-dot status-${proj.status}"></div>
+        <div class="project-card-info">
+          <div class="project-title">${proj.name}</div>
+          <span class="project-phase-tag" style="background:${color}18;border:1px solid ${color}44;color:${color}">${proj.phase}</span>
+        </div>
+        <div style="font-size:11px;color:${statusColor[proj.status]};flex-shrink:0;margin-left:8px">${statusLabel[proj.status]}</div>
+      </div>
+      ${proj.desc ? `<div class="project-desc">${proj.desc}</div>` : ''}
+      <div class="project-meta">
+        <div class="project-meta-item">ADDED: <span>${proj.addedAt}</span></div>
+        ${proj.link ? `<div class="project-meta-item"><a href="${proj.link}" target="_blank" style="color:var(--accent)">🔗 GITHUB</a></div>` : ''}
+      </div>
+      ${proj.tech.length > 0 ? `<div class="project-tech">${proj.tech.map(t => `<span class="tech-chip">${t}</span>`).join('')}</div>` : ''}
+      ${proj.note ? `<div class="project-note visible">📝 ${proj.note}</div>` : ''}
+      <div class="project-actions">
+        <button class="proj-btn proj-btn-status" onclick="cycleStatus('${proj.id}')">⟳ STATUS</button>
+        <button class="proj-btn proj-btn-note" onclick="openNoteModal('${proj.id}')">✏️ NOTE</button>
+        <button class="proj-btn proj-btn-delete" onclick="deleteProject('${proj.id}')">✕ DELETE</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ============================================================
+// LEADERBOARD
+// ============================================================
+function renderLeaderboard() {
+  const list = document.getElementById('lb-list');
+  let history = [];
+  try { history = JSON.parse(localStorage.getItem('dso_lb') || '[]'); } catch(e) {}
+  if (history.length === 0) {
+    list.innerHTML = '<div style="text-align:center;color:var(--dim);padding:20px;font-size:11px;">No sessions saved yet.</div>';
+  } else {
+    const sorted = [...history].sort((a,b) => b.xp - a.xp);
+    list.innerHTML = sorted.map((entry, idx) => {
+      const rankClass = idx === 0 ? 'r1' : idx === 1 ? 'r2' : idx === 2 ? 'r3' : 'other';
+      const rank = getRank(entry.xp);
+      return `<div class="lb-entry">
+        <div class="lb-rank ${rankClass}">${idx + 1}</div>
+        <div class="lb-info">
+          <div class="lb-name">${entry.label}</div>
+          <div class="lb-date">${entry.date}</div>
+        </div>
+        <span class="lb-badge" style="color:${rank.color};border:1px solid ${rank.color}44;background:${rank.color}11">${rank.name}</span>
+        <div class="lb-score">
+          <div class="lb-xp-val">${entry.xp.toLocaleString()} XP</div>
+          <div class="lb-skills-val">${entry.skills} skills · ${entry.projects || 0} projects</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+  const s = getStats();
+  const rank = getRank(s.xp);
+  document.getElementById('current-session').innerHTML = `
+    <div class="lb-entry" style="border-color:var(--accent);box-shadow:0 0 12px rgba(0,212,255,0.08)">
+      <div class="lb-rank" style="color:var(--accent)">●</div>
+      <div class="lb-info">
+        <div class="lb-name">Current Session</div>
+        <div class="lb-date">${new Date(state.sessionStart).toLocaleString()}</div>
+      </div>
+      <span class="lb-badge" style="color:${rank.color};border:1px solid ${rank.color}44;background:${rank.color}11">${rank.name}</span>
+      <div class="lb-score">
+        <div class="lb-xp-val">${s.xp.toLocaleString()} XP</div>
+        <div class="lb-skills-val">${s.total} skills · ${state.projects.length} projects</div>
+      </div>
+    </div>`;
+}
+
+function saveToLeaderboard() {
+  const s = getStats();
+  const label = prompt('Name this session:', `Session — ${new Date().toLocaleDateString()}`);
+  if (label === null) return;
+  let history = [];
+  try { history = JSON.parse(localStorage.getItem('dso_lb') || '[]'); } catch(e) {}
+  history.push({ label: label || `Session ${new Date().toLocaleDateString()}`, date: new Date().toLocaleString(), xp: s.xp, skills: s.total, projects: state.projects.length });
+  localStorage.setItem('dso_lb', JSON.stringify(history));
+  renderLeaderboard();
+  showToast('✅ Saved', 'Session saved to leaderboard!');
+}
+
+function clearLeaderboard() {
+  if (confirm('Clear all leaderboard history?')) {
+    localStorage.removeItem('dso_lb');
+    renderLeaderboard();
+    showToast('🗑️ Cleared', 'Leaderboard history removed.');
+  }
+}
+
+// ============================================================
+// ACHIEVEMENTS
+// ============================================================
+function renderAchievements() {
+  const s = getStats();
+  document.getElementById('ach-grid').innerHTML = ACHIEVEMENTS.map(a => {
+    const earned = a.check(s);
+    return `<div class="ach-card ${earned ? 'earned' : 'locked-ach'}">
+      <div class="ach-icon">${a.icon}</div>
+      <div>
+        <div class="ach-name">${a.name}</div>
+        <div class="ach-desc">${a.desc}</div>
+        ${earned ? '<div class="ach-status">✓ UNLOCKED</div>' : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function checkAchievements() {
+  const s = getStats();
+  ACHIEVEMENTS.forEach(a => {
+    if (!state.earnedAch.includes(a.id) && a.check(s)) {
+      state.earnedAch.push(a.id);
+      saveState();
+      setTimeout(() => showToast(`🏅 ${a.name}`, a.desc), 800);
+    }
+  });
+}
+
+// ============================================================
+// TOAST & TABS
+// ============================================================
+function showToast(title, msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-title').textContent = title;
+  document.getElementById('toast-msg').textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function switchTab(tab, btn) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+  document.getElementById(`tab-${tab}`).classList.add('active');
+  if (btn) btn.classList.add('active');
+  if (tab === 'leaderboard') renderLeaderboard();
+  if (tab === 'achievements') renderAchievements();
+  if (tab === 'projects') renderProjects();
+}
+
+// Close modal on overlay click
+document.getElementById('note-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeNoteModal();
+});
+
+// ── INIT ──
+loadState();
+renderHeader();
+renderPhaseGrid();
+renderProjects();
+</script>
+</body>
+</html>
