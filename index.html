@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Surya learning DevSecOps: Skill Tree</title>
+<title>DevSecOps: Skill Tree</title>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -407,8 +407,12 @@
 </head>
 <body>
 
+<div id="view-banner" style="display:none;background:linear-gradient(90deg,rgba(255,215,0,0.12),rgba(0,212,255,0.08));border-bottom:1px solid rgba(255,215,0,0.3);padding:10px 28px;font-size:12px;color:#ffd700;letter-spacing:1px;text-align:center;position:sticky;top:0;z-index:101;">
+  👁️ READ-ONLY VIEW — You are viewing <strong id="view-owner-name">Surya</strong>'s DevSecOps learning progress. <span style="color:var(--dim)">Progress cannot be modified.</span>
+</div>
+
 <div class="header">
-  <div class="header-title">Surya Learning DEV<span>SEC</span>OPS</div>
+  <div class="header-title" id="header-title">DEV<span>SEC</span>OPS</div>
   <div class="header-stats">
     <div class="stat-pill"><span class="stat-label">LVL</span><span class="stat-value" id="stat-level">1</span></div>
     <div class="stat-pill"><span class="stat-label">XP</span><span class="stat-value" id="stat-xp">0</span></div>
@@ -426,13 +430,14 @@
   <button class="nav-tab" onclick="switchTab('projects',this)">[ PROJECTS ] <span class="tab-badge" id="proj-badge">0</span></button>
   <button class="nav-tab" onclick="switchTab('leaderboard',this)">[ LEADERBOARD ]</button>
   <button class="nav-tab" onclick="switchTab('achievements',this)">[ ACHIEVEMENTS ]</button>
+  <button class="nav-tab view-only-hide" id="copy-link-btn" onclick="copyViewLink()" style="margin-left:auto;color:var(--accent2);border-bottom-color:transparent;">[ 🔗 SHARE READ-ONLY ]</button>
 </div>
 
 <div class="main">
 
   <!-- ── SKILL TREE ── -->
   <div id="tab-tree" class="tab-content active">
-    <div class="section-intro">
+    <div class="section-intro" id="tree-intro">
       ▶ All phases are open — learn in any order based on your interest. Click a phase header to expand skills. Check off each skill as you complete it to earn XP.
     </div>
     <div class="filter-bar">
@@ -1064,11 +1069,96 @@ document.getElementById('note-modal').addEventListener('click', function(e) {
   if (e.target === this) closeNoteModal();
 });
 
+// ── COPY SHARE LINK ──
+function copyViewLink() {
+  const url = window.location.href.split('?')[0] + '?view=true';
+  navigator.clipboard.writeText(url).then(() => {
+    showToast('🔗 Link Copied!', 'Share this read-only link on LinkedIn');
+  }).catch(() => {
+    prompt('Copy this link:', url);
+  });
+}
+
+// ── VIEW MODE ──
+const IS_VIEW_MODE = new URLSearchParams(window.location.search).get('view') === 'true';
+
+function applyViewMode() {
+  if (!IS_VIEW_MODE) return;
+
+  // Show banner
+  document.getElementById('view-banner').style.display = 'block';
+
+  // Update header title
+  document.getElementById('header-title').innerHTML = 'SURYA\'S <span>DEVSECOPS</span> JOURNEY';
+
+  // Update intro
+  document.getElementById('tree-intro').textContent = '▶ Read-only view of Surya\'s learning progress. Skills shown in green are completed.';
+
+  // Hide share button (already viewing)
+  document.getElementById('copy-link-btn').style.display = 'none';
+
+  // Hide add project form, show only cards
+  const addPanel = document.querySelector('.add-project-panel');
+  if (addPanel) addPanel.style.display = 'none';
+  const projLayout = document.querySelector('.projects-layout');
+  if (projLayout) projLayout.style.gridTemplateColumns = '1fr';
+
+  // Load state from URL encoded data if present, else use demo/empty
+  const encoded = new URLSearchParams(window.location.search).get('data');
+  if (encoded) {
+    try {
+      const decoded = JSON.parse(atob(encoded));
+      state = { ...state, ...decoded };
+    } catch(e) {}
+  }
+}
+
+function encodeStateToURL() {
+  // Generates a shareable URL with your progress baked in
+  const shareData = {
+    completed: state.completed,
+    projects: state.projects,
+    earnedAch: state.earnedAch
+  };
+  const encoded = btoa(JSON.stringify(shareData));
+  const url = window.location.href.split('?')[0] + '?view=true&data=' + encoded;
+  navigator.clipboard.writeText(url).then(() => {
+    showToast('🔗 Link Copied!', 'Your progress is embedded — share on LinkedIn!');
+  }).catch(() => {
+    prompt('Copy this link:', url);
+  });
+}
+
+// Override copyViewLink to embed progress
+function copyViewLink() {
+  encodeStateToURL();
+}
+
+// Disable all interactions in view mode
+function guardViewMode() {
+  if (!IS_VIEW_MODE) return;
+  // Override toggleSkill to do nothing
+  window.toggleSkill = () => {};
+  window.addProject = () => {};
+  window.deleteProject = () => {};
+  window.cycleStatus = () => {};
+  window.openNoteModal = () => {};
+  window.saveToLeaderboard = () => {};
+  window.clearLeaderboard = () => {};
+
+  // Style all skill items as non-interactive
+  document.querySelectorAll('.skill-item').forEach(el => {
+    el.style.cursor = 'default';
+  });
+}
+
 // ── INIT ──
 loadState();
+applyViewMode();
 renderHeader();
 renderPhaseGrid();
 renderProjects();
+if (IS_VIEW_MODE) guardViewMode();
 </script>
 </body>
 </html>
