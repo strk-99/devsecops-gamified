@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Surya Learning DevSecOps: Skill Tree</title>
+<title>SURYA LEARNING DevSecOps: Skill Tree</title>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -403,6 +403,14 @@
     .main { padding: 10px; }
     .phase-grid { grid-template-columns: 1fr; }
   }
+
+  /* ── VIEW MODE ── */
+  body.view-mode .skill-item { cursor: default !important; pointer-events: none; }
+  body.view-mode .skill-item:hover { background: none; border-color: transparent; }
+  body.view-mode .skill-item.done:hover { background: rgba(0,255,136,0.04); border-color: rgba(0,255,136,0.12); }
+  body.view-mode .add-project-panel { display: none !important; }
+  body.view-mode .projects-layout { grid-template-columns: 1fr !important; }
+  body.view-mode .filter-btn { pointer-events: all; cursor: pointer; } /* filters still work */
 </style>
 </head>
 <body>
@@ -800,6 +808,7 @@ function togglePhase(id) {
 }
 
 function toggleSkill(phaseId, skillIdx) {
+  if (IS_VIEW_MODE) return; // 🔒 locked in view mode
   const key = `${phaseId}-${skillIdx}`;
   const wasDone = !!state.completed[key];
   state.completed[key] = !wasDone;
@@ -838,6 +847,7 @@ function toggleSkill(phaseId, skillIdx) {
 // PROJECTS
 // ============================================================
 function addProject() {
+  if (IS_VIEW_MODE) return; // 🔒 locked in view mode
   const name = document.getElementById('proj-name').value.trim();
   if (!name) { showToast('⚠️ Missing', 'Project name is required'); return; }
 
@@ -866,6 +876,7 @@ function addProject() {
 }
 
 function cycleStatus(id) {
+  if (IS_VIEW_MODE) return; // 🔒 locked in view mode
   const proj = state.projects.find(p => p.id === id);
   if (!proj) return;
   const cycle = { todo: 'inprogress', inprogress: 'done', done: 'todo' };
@@ -879,6 +890,7 @@ function cycleStatus(id) {
 }
 
 function deleteProject(id) {
+  if (IS_VIEW_MODE) return; // 🔒 locked in view mode
   if (!confirm('Remove this project?')) return;
   state.projects = state.projects.filter(p => p.id !== id);
   saveState();
@@ -888,6 +900,7 @@ function deleteProject(id) {
 }
 
 function openNoteModal(id) {
+  if (IS_VIEW_MODE) return; // 🔒 locked in view mode
   const proj = state.projects.find(p => p.id === id);
   if (!proj) return;
   noteEditId = id;
@@ -939,11 +952,11 @@ function renderProjects() {
       </div>
       ${proj.tech.length > 0 ? `<div class="project-tech">${proj.tech.map(t => `<span class="tech-chip">${t}</span>`).join('')}</div>` : ''}
       ${proj.note ? `<div class="project-note visible">📝 ${proj.note}</div>` : ''}
-      <div class="project-actions">
+      ${IS_VIEW_MODE ? '' : `<div class="project-actions">
         <button class="proj-btn proj-btn-status" onclick="cycleStatus('${proj.id}')">⟳ STATUS</button>
         <button class="proj-btn proj-btn-note" onclick="openNoteModal('${proj.id}')">✏️ NOTE</button>
         <button class="proj-btn proj-btn-delete" onclick="deleteProject('${proj.id}')">✕ DELETE</button>
-      </div>
+      </div>`}
     </div>`;
   }).join('');
 }
@@ -1084,6 +1097,9 @@ const IS_VIEW_MODE = new URLSearchParams(window.location.search).get('view') ===
 
 function applyViewMode() {
   if (!IS_VIEW_MODE) return;
+
+  // Add body class for CSS locking
+  document.body.classList.add('view-mode');
 
   // Show banner
   document.getElementById('view-banner').style.display = 'block';
