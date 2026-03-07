@@ -123,6 +123,17 @@
   }
   .search-box:focus { border-color: var(--accent); }
   .search-box::placeholder { color: var(--dim); }
+  .filter-extra {
+    display: flex; gap: 8px; align-items: center;
+  }
+  .filter-repo-btn {
+    padding: 8px 14px; font-family: 'Share Tech Mono', monospace;
+    font-size: 11px; background: var(--panel); border: 1px solid var(--border);
+    border-radius: 5px; color: var(--dim); cursor: pointer;
+    transition: all 0.2s; letter-spacing: 1px; white-space: nowrap;
+  }
+  .filter-repo-btn:hover { color: var(--accent2); border-color: var(--accent2); }
+  .filter-repo-btn.active { color: var(--accent2); border-color: var(--accent2); background: rgba(0,255,136,0.07); }
 
   /* ── PHASE GRID ── */
   .phase-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 20px; }
@@ -150,9 +161,10 @@
     font-weight: 700; letter-spacing: 1px;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
-  .phase-meta { display: flex; align-items: center; gap: 10px; margin-top: 5px; }
+  .phase-meta { display: flex; align-items: center; gap: 10px; margin-top: 5px; flex-wrap: wrap; }
   .phase-hours { font-size: 12px; color: var(--dim); }
   .phase-progress-text { font-size: 12px; color: var(--accent2); }
+  .phase-repo-count { font-size: 11px; color: var(--accent4); }
   .phase-progress-bar { height: 4px; background: #1a2233; border-radius: 2px; overflow: hidden; margin-top: 7px; }
   .phase-progress-fill { height: 100%; border-radius: 2px; transition: width 0.5s; }
   .phase-toggle { color: var(--dim); font-size: 14px; transition: transform 0.3s; flex-shrink: 0; }
@@ -161,22 +173,85 @@
   .skills-list { display: none; padding: 8px 14px 14px; gap: 4px; flex-direction: column; }
   .skills-list.open { display: flex; }
 
+  /* ── SKILL ITEM WITH REPO SUPPORT ── */
   .skill-item {
-    display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+    display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px;
     border-radius: 5px; cursor: pointer; transition: all 0.15s;
-    border: 1px solid transparent;
+    border: 1px solid transparent; position: relative;
   }
   .skill-item:hover { background: rgba(0,212,255,0.05); border-color: rgba(0,212,255,0.18); }
   .skill-item.done { background: rgba(0,255,136,0.04); border-color: rgba(0,255,136,0.14); }
   .skill-item.done .skill-name { color: var(--accent2); }
+  .skill-item.has-repo { border-left: 2px solid var(--accent4); }
   .skill-checkbox {
     width: 19px; height: 19px; border: 1px solid var(--border);
     border-radius: 4px; display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0; transition: all 0.2s; font-size: 11px;
+    flex-shrink: 0; transition: all 0.2s; font-size: 11px; margin-top: 1px;
   }
   .skill-item.done .skill-checkbox { background: var(--accent2); border-color: var(--accent2); color: #000; box-shadow: 0 0 8px rgba(0,255,136,0.4); }
-  .skill-name { font-size: 13px; color: var(--text); flex: 1; line-height: 1.45; }
-  .skill-xp { font-size: 11px; color: var(--accent); flex-shrink: 0; }
+  .skill-content { flex: 1; min-width: 0; }
+  .skill-name { font-size: 13px; color: var(--text); line-height: 1.45; }
+  .skill-repo-row { display: flex; align-items: center; gap: 6px; margin-top: 5px; flex-wrap: wrap; }
+  .skill-repo-link {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 10px; color: var(--accent4); text-decoration: none;
+    background: rgba(180,79,255,0.08); border: 1px solid rgba(180,79,255,0.25);
+    border-radius: 4px; padding: 2px 7px; transition: all 0.2s;
+    max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .skill-repo-link:hover { background: rgba(180,79,255,0.18); color: #d090ff; }
+  .skill-repo-input-wrap {
+    display: none; align-items: center; gap: 4px; margin-top: 5px; flex: 1;
+  }
+  .skill-repo-input-wrap.visible { display: flex; }
+  .skill-repo-input {
+    flex: 1; min-width: 0; padding: 3px 8px;
+    background: var(--bg); border: 1px solid rgba(180,79,255,0.35);
+    border-radius: 4px; color: var(--text);
+    font-family: 'Share Tech Mono', monospace; font-size: 11px; outline: none;
+    transition: border-color 0.2s;
+  }
+  .skill-repo-input:focus { border-color: var(--accent4); }
+  .skill-repo-save-btn {
+    padding: 3px 8px; font-size: 10px; font-family: 'Share Tech Mono', monospace;
+    background: rgba(180,79,255,0.1); border: 1px solid rgba(180,79,255,0.3);
+    border-radius: 4px; color: var(--accent4); cursor: pointer; white-space: nowrap;
+    transition: all 0.2s;
+  }
+  .skill-repo-save-btn:hover { background: rgba(180,79,255,0.2); }
+  .skill-repo-cancel-btn {
+    padding: 3px 8px; font-size: 10px; font-family: 'Share Tech Mono', monospace;
+    background: none; border: 1px solid var(--border);
+    border-radius: 4px; color: var(--dim); cursor: pointer;
+    transition: all 0.2s;
+  }
+  .skill-repo-cancel-btn:hover { color: var(--text); }
+  .skill-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+  .skill-xp { font-size: 11px; color: var(--accent); }
+  .skill-repo-btn {
+    width: 22px; height: 22px; border-radius: 4px; border: none;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; cursor: pointer; transition: all 0.2s;
+    background: rgba(180,79,255,0.08); color: var(--accent4);
+    flex-shrink: 0; opacity: 0;
+    border: 1px solid transparent;
+  }
+  .skill-item:hover .skill-repo-btn,
+  .skill-item.has-repo .skill-repo-btn { opacity: 1; }
+  .skill-item.has-repo .skill-repo-btn { background: rgba(180,79,255,0.15); border-color: rgba(180,79,255,0.3); }
+  .skill-repo-btn:hover { background: rgba(180,79,255,0.25) !important; border-color: rgba(180,79,255,0.5) !important; }
+  .skill-repo-btn.editing { background: rgba(255,107,53,0.15) !important; color: var(--accent3) !important; border-color: rgba(255,107,53,0.35) !important; opacity: 1; }
+
+  /* Repo stats bar */
+  .repo-stats-bar {
+    display: flex; gap: 8px; align-items: center; margin-bottom: 16px;
+    padding: 10px 16px; background: rgba(180,79,255,0.05);
+    border: 1px solid rgba(180,79,255,0.15); border-radius: 6px;
+    flex-wrap: wrap;
+  }
+  .repo-stats-item { font-size: 12px; color: var(--dim); }
+  .repo-stats-item span { color: var(--accent4); font-weight: bold; }
+  .repo-stats-sep { color: var(--border); }
 
   /* ── PROJECTS ── */
   .projects-layout { display: grid; grid-template-columns: 1fr 360px; gap: 20px; align-items: start; }
@@ -353,19 +428,7 @@
   .ach-desc { font-size: 11px; color: var(--dim); line-height: 1.45; }
   .ach-status { font-size: 10px; color: var(--gold); margin-top: 6px; letter-spacing: 1px; }
 
-  /* ── TOAST ── */
-  .toast {
-    position: fixed; bottom: 20px; right: 20px;
-    background: var(--panel); border: 1px solid var(--accent2);
-    border-radius: 8px; padding: 12px 18px; z-index: 9998;
-    transform: translateX(120%); transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
-    max-width: 280px; box-shadow: 0 0 25px rgba(0,255,136,0.15);
-  }
-  .toast.show { transform: translateX(0); }
-  .toast-title { font-size: 11px; color: var(--accent2); font-weight: bold; margin-bottom: 3px; }
-  .toast-msg { font-size: 10px; color: var(--text); }
-
-  /* modal */
+  /* ── REPO MODAL ── */
   .modal-overlay {
     position: fixed; inset: 0; background: rgba(0,0,0,0.7);
     z-index: 1000; display: flex; align-items: center; justify-content: center;
@@ -375,10 +438,21 @@
   .modal-overlay.open { opacity: 1; pointer-events: all; }
   .modal {
     background: var(--panel); border: 1px solid var(--accent);
-    border-radius: 10px; padding: 20px; width: 90%; max-width: 420px;
+    border-radius: 10px; padding: 20px; width: 90%; max-width: 480px;
     box-shadow: 0 0 40px rgba(0,212,255,0.15);
   }
-  .modal-title { font-family: 'Orbitron', monospace; font-size: 12px; color: var(--accent); letter-spacing: 2px; margin-bottom: 12px; }
+  .modal-title { font-family: 'Orbitron', monospace; font-size: 12px; color: var(--accent); letter-spacing: 2px; margin-bottom: 6px; }
+  .modal-subtitle { font-size: 11px; color: var(--dim); margin-bottom: 14px; line-height: 1.5; }
+  .modal-skill-name { font-size: 13px; color: var(--accent2); margin-bottom: 14px; padding: 8px 10px; background: rgba(0,255,136,0.04); border: 1px solid rgba(0,255,136,0.15); border-radius: 4px; }
+  .modal-input {
+    width: 100%; padding: 10px 12px;
+    background: var(--bg); border: 1px solid rgba(180,79,255,0.35);
+    border-radius: 4px; color: var(--text);
+    font-family: 'Share Tech Mono', monospace; font-size: 13px;
+    outline: none; transition: border-color 0.2s; margin-bottom: 8px;
+  }
+  .modal-input:focus { border-color: var(--accent4); }
+  .modal-hint { font-size: 10px; color: var(--dim); margin-bottom: 14px; line-height: 1.6; }
   .modal-textarea {
     width: 100%; min-height: 100px; padding: 10px;
     background: var(--bg); border: 1px solid var(--border);
@@ -392,10 +466,24 @@
     padding: 7px 16px; font-family: 'Share Tech Mono', monospace;
     font-size: 10px; border-radius: 4px; cursor: pointer; letter-spacing: 1px; transition: all 0.2s;
   }
-  .modal-btn-save { background: rgba(0,212,255,0.1); border: 1px solid var(--accent); color: var(--accent); }
-  .modal-btn-save:hover { background: rgba(0,212,255,0.2); }
+  .modal-btn-save { background: rgba(180,79,255,0.12); border: 1px solid rgba(180,79,255,0.4); color: var(--accent4); }
+  .modal-btn-save:hover { background: rgba(180,79,255,0.22); }
+  .modal-btn-clear { background: rgba(255,68,68,0.07); border: 1px solid rgba(255,68,68,0.25); color: var(--danger); }
+  .modal-btn-clear:hover { background: rgba(255,68,68,0.15); }
   .modal-btn-cancel { background: none; border: 1px solid var(--border); color: var(--dim); }
   .modal-btn-cancel:hover { border-color: var(--text); color: var(--text); }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed; bottom: 20px; right: 20px;
+    background: var(--panel); border: 1px solid var(--accent2);
+    border-radius: 8px; padding: 12px 18px; z-index: 9998;
+    transform: translateX(120%); transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
+    max-width: 280px; box-shadow: 0 0 25px rgba(0,255,136,0.15);
+  }
+  .toast.show { transform: translateX(0); }
+  .toast-title { font-size: 11px; color: var(--accent2); font-weight: bold; margin-bottom: 3px; }
+  .toast-msg { font-size: 10px; color: var(--text); }
 
   @media (max-width: 600px) {
     .header { flex-wrap: wrap; }
@@ -405,18 +493,21 @@
   }
 
   /* ── VIEW MODE ── */
-  body.view-mode .skill-item { cursor: default !important; pointer-events: none; }
-  body.view-mode .skill-item:hover { background: none; border-color: transparent; }
-  body.view-mode .skill-item.done:hover { background: rgba(0,255,136,0.04); border-color: rgba(0,255,136,0.12); }
+  body.view-mode .skill-item { pointer-events: none; }
+  body.view-mode .skill-item:hover { background: none !important; border-color: transparent !important; }
+  body.view-mode .skill-item.done:hover { background: rgba(0,255,136,0.04) !important; border-color: rgba(0,255,136,0.12) !important; }
+  body.view-mode .skill-item.has-repo:hover { border-left-color: var(--accent4) !important; }
   body.view-mode .add-project-panel { display: none !important; }
   body.view-mode .projects-layout { grid-template-columns: 1fr !important; }
-  body.view-mode .filter-btn { pointer-events: all; cursor: pointer; } /* filters still work */
+  body.view-mode .filter-btn { pointer-events: all; cursor: pointer; }
+  body.view-mode .skill-repo-btn { display: none !important; }
+  body.view-mode .skill-repo-link { pointer-events: all !important; }
 </style>
 </head>
 <body>
 
 <div id="view-banner" style="display:none;background:linear-gradient(90deg,rgba(255,215,0,0.12),rgba(0,212,255,0.08));border-bottom:1px solid rgba(255,215,0,0.3);padding:10px 28px;font-size:12px;color:#ffd700;letter-spacing:1px;text-align:center;position:sticky;top:0;z-index:101;">
-  👁️ READ-ONLY VIEW — You are viewing <strong id="view-owner-name">Surya</strong>'s DevSecOps learning progress. <span style="color:var(--dim)">Progress cannot be modified.</span>
+  👁️ READ-ONLY VIEW — You are viewing <strong id="view-owner-name">Surya</strong>'s DevSecOps learning progress. <span style="color:var(--dim)">Purple links = GitHub repos per skill.</span>
 </div>
 
 <div class="header">
@@ -425,6 +516,7 @@
     <div class="stat-pill"><span class="stat-label">LVL</span><span class="stat-value" id="stat-level">1</span></div>
     <div class="stat-pill"><span class="stat-label">XP</span><span class="stat-value" id="stat-xp">0</span></div>
     <div class="stat-pill"><span class="stat-label">SKILLS</span><span class="stat-value green" id="stat-skills">0/0</span></div>
+    <div class="stat-pill"><span class="stat-label">REPOS</span><span class="stat-value" style="color:var(--accent4)" id="stat-repos">0</span></div>
     <div class="stat-pill"><span class="stat-label">RANK</span><span class="stat-value gold" id="stat-rank">RECRUIT</span></div>
     <div class="xp-bar-wrap">
       <div class="xp-bar-label"><span>TO NEXT RANK</span><span id="xp-pct">0%</span></div>
@@ -446,7 +538,7 @@
   <!-- ── SKILL TREE ── -->
   <div id="tab-tree" class="tab-content active">
     <div class="section-intro" id="tree-intro">
-      ▶ All phases are open — learn in any order based on your interest. Click a phase header to expand skills. Check off each skill as you complete it to earn XP.
+      ▶ All phases are open — learn in any order. Check off each skill to earn XP. Click the <span style="color:var(--accent4)">🔗</span> icon on any skill to attach a GitHub repo as proof of work — your portfolio evidence lives here.
     </div>
     <div class="filter-bar">
       <input type="text" class="search-box" placeholder="🔍 search skills..." oninput="filterSkills(this.value)" id="skill-search">
@@ -454,7 +546,9 @@
       <button class="filter-btn" onclick="setFilter('todo',this)">TODO</button>
       <button class="filter-btn" onclick="setFilter('done',this)">DONE</button>
       <button class="filter-btn" onclick="setFilter('inprogress',this)">IN PROGRESS</button>
+      <button class="filter-repo-btn" id="filter-repo-btn" onclick="toggleRepoFilter(this)">🔗 HAS REPO</button>
     </div>
+    <div id="repo-stats-bar" class="repo-stats-bar" style="display:none"></div>
     <div class="phase-grid" id="phase-grid"></div>
   </div>
 
@@ -546,6 +640,25 @@
   </div>
 </div>
 
+<!-- Repo Link Modal -->
+<div class="modal-overlay" id="repo-modal">
+  <div class="modal" style="border-color:var(--accent4);box-shadow:0 0 40px rgba(180,79,255,0.12)">
+    <div class="modal-title">🔗 ATTACH GITHUB REPO</div>
+    <div class="modal-subtitle">Link a GitHub repo as proof of work for this skill. It will appear on the skill card and in your shareable read-only view.</div>
+    <div class="modal-skill-name" id="repo-modal-skill-name">Skill name</div>
+    <input class="modal-input" id="repo-modal-url" placeholder="https://github.com/surya/repo-name" type="url">
+    <div class="modal-hint">
+      💡 Tips: Can be a specific repo, a folder link, a gist, or even a blog post.<br>
+      e.g. https://github.com/you/linux-scripts or https://github.com/you/devsecops-notes
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn modal-btn-clear" onclick="clearRepoLink()">✕ REMOVE</button>
+      <button class="modal-btn modal-btn-cancel" onclick="closeRepoModal()">CANCEL</button>
+      <button class="modal-btn modal-btn-save" onclick="saveRepoLink()">💾 SAVE LINK</button>
+    </div>
+  </div>
+</div>
+
 <!-- Note modal -->
 <div class="modal-overlay" id="note-modal">
   <div class="modal">
@@ -553,7 +666,7 @@
     <textarea class="modal-textarea" id="note-text" placeholder="Add notes, learnings, issues faced..."></textarea>
     <div class="modal-actions">
       <button class="modal-btn modal-btn-cancel" onclick="closeNoteModal()">CANCEL</button>
-      <button class="modal-btn modal-btn-save" onclick="saveNote()">SAVE NOTE</button>
+      <button class="modal-btn modal-btn-save" style="background:rgba(0,212,255,0.1);border:1px solid var(--accent);color:var(--accent)" onclick="saveNote()">SAVE NOTE</button>
     </div>
   </div>
 </div>
@@ -632,6 +745,8 @@ const RANKS = [
 
 const ACHIEVEMENTS = [
   { id: 'first_skill', icon: '🌱', name: 'First Step', desc: 'Complete your first skill', check: (s) => s.total >= 1 },
+  { id: 'first_repo', icon: '🔗', name: 'First Proof', desc: 'Attach your first GitHub repo to a skill', check: (s) => s.repoCount >= 1 },
+  { id: 'ten_repos', icon: '📚', name: 'Portfolio Builder', desc: 'Attach 10 GitHub repos to skills', check: (s) => s.repoCount >= 10 },
   { id: 'phase0', icon: '⚡', name: 'Foundations Laid', desc: 'Complete Phase 0', check: (s) => s.phasesDone.includes(0) },
   { id: 'linux_hero', icon: '🐧', name: 'Linux Hero', desc: 'Complete Phase 1 (Linux Mastery)', check: (s) => s.phasesDone.includes(1) },
   { id: 'code_wizard', icon: '🐍', name: 'Code Wizard', desc: 'Complete Phase 2 (Programming)', check: (s) => s.phasesDone.includes(2) },
@@ -658,19 +773,30 @@ const PHASE_COLORS = ['#00d4ff','#ff6b35','#b44fff','#00ff88','#ff9500','#26a69a
 // ============================================================
 let state = {
   completed: {},
+  repos: {},          // key: "phaseId-skillIdx" -> url string
   earnedAch: [],
   projects: [],
   sessionStart: Date.now()
 };
 
 let currentFilter = 'all';
+let filterRepoOnly = false;
 let noteEditId = null;
+let repoEditKey = null;
 
 function loadState() {
-  try { const s = localStorage.getItem('dso_v2'); if (s) state = { ...state, ...JSON.parse(s) }; } catch(e) {}
+  try {
+    const s = localStorage.getItem('dso_v3');
+    if (s) state = { ...state, ...JSON.parse(s) };
+    // Migrate from v2 if needed
+    else {
+      const old = localStorage.getItem('dso_v2');
+      if (old) { const d = JSON.parse(old); state = { ...state, completed: d.completed || {}, earnedAch: d.earnedAch || [], projects: d.projects || [] }; }
+    }
+  } catch(e) {}
 }
 function saveState() {
-  try { localStorage.setItem('dso_v2', JSON.stringify(state)); } catch(e) {}
+  try { localStorage.setItem('dso_v3', JSON.stringify(state)); } catch(e) {}
 }
 
 function getStats() {
@@ -684,7 +810,8 @@ function getStats() {
   });
   const projectsTotal = state.projects.length;
   const projectsDone = state.projects.filter(p => p.status === 'done').length;
-  return { total, totalSkills, xp, phasesDone, projectsTotal, projectsDone };
+  const repoCount = Object.keys(state.repos || {}).filter(k => state.repos[k]).length;
+  return { total, totalSkills, xp, phasesDone, projectsTotal, projectsDone, repoCount };
 }
 
 function getRank(xp) {
@@ -704,11 +831,27 @@ function renderHeader() {
   document.getElementById('stat-level').textContent = level;
   document.getElementById('stat-xp').textContent = s.xp.toLocaleString();
   document.getElementById('stat-skills').textContent = `${s.total}/${s.totalSkills}`;
+  document.getElementById('stat-repos').textContent = s.repoCount;
   document.getElementById('stat-rank').textContent = rank.name;
   document.getElementById('stat-rank').style.color = rank.color;
   document.getElementById('xp-pct').textContent = pct + '%';
   document.getElementById('xp-fill').style.width = pct + '%';
   document.getElementById('proj-badge').textContent = state.projects.length;
+
+  // Repo stats bar
+  const bar = document.getElementById('repo-stats-bar');
+  if (s.repoCount > 0) {
+    bar.style.display = 'flex';
+    bar.innerHTML = `
+      <span class="repo-stats-item">🔗 <span>${s.repoCount}</span> repo${s.repoCount!==1?'s':''} attached</span>
+      <span class="repo-stats-sep">|</span>
+      <span class="repo-stats-item">Coverage: <span>${s.total > 0 ? Math.round(s.repoCount/s.total*100) : 0}%</span> of completed skills have repos</span>
+      <span class="repo-stats-sep">|</span>
+      <span class="repo-stats-item" style="color:var(--dim);font-size:10px">Click 🔗 on any skill item to attach a GitHub repo</span>
+    `;
+  } else {
+    bar.style.display = 'none';
+  }
 }
 
 // ============================================================
@@ -718,8 +861,11 @@ function renderPhaseGrid() {
   const grid = document.getElementById('phase-grid');
   grid.innerHTML = '';
   PHASES.forEach(phase => {
-    let doneCnt = 0;
-    phase.skills.forEach((_, i) => { if (state.completed[`${phase.id}-${i}`]) doneCnt++; });
+    let doneCnt = 0, repoCnt = 0;
+    phase.skills.forEach((_, i) => {
+      if (state.completed[`${phase.id}-${i}`]) doneCnt++;
+      if (state.repos[`${phase.id}-${i}`]) repoCnt++;
+    });
     const pct = Math.round(doneCnt / phase.skills.length * 100);
     const completed = doneCnt === phase.skills.length;
     const inProgress = doneCnt > 0 && !completed;
@@ -730,6 +876,7 @@ function renderPhaseGrid() {
     card.dataset.doneCnt = doneCnt;
     card.dataset.total = phase.skills.length;
     card.dataset.inProgress = inProgress ? '1' : '0';
+    card.dataset.repoCnt = repoCnt;
 
     card.innerHTML = `
       <div class="phase-header" onclick="togglePhase(${phase.id})">
@@ -739,6 +886,7 @@ function renderPhaseGrid() {
           <div class="phase-meta">
             <span class="phase-hours">~${phase.hours}h</span>
             <span class="phase-progress-text">${doneCnt}/${phase.skills.length} (${pct}%)</span>
+            ${repoCnt > 0 ? `<span class="phase-repo-count">🔗 ${repoCnt} repo${repoCnt!==1?'s':''}</span>` : ''}
           </div>
           <div class="phase-progress-bar">
             <div class="phase-progress-fill" style="width:${pct}%;background:${phase.color}"></div>
@@ -747,18 +895,45 @@ function renderPhaseGrid() {
         <div class="phase-toggle" id="toggle-${phase.id}">▶</div>
       </div>
       <div class="skills-list" id="skills-${phase.id}">
-        ${phase.skills.map((skill, i) => {
-          const done = !!state.completed[`${phase.id}-${i}`];
-          return `<div class="skill-item ${done ? 'done' : ''}" onclick="toggleSkill(${phase.id},${i})">
-            <div class="skill-checkbox">${done ? '✓' : ''}</div>
-            <div class="skill-name">${skill}</div>
-            <div class="skill-xp">+${10*(phase.id+1)} XP</div>
-          </div>`;
-        }).join('')}
+        ${phase.skills.map((skill, i) => buildSkillHTML(phase, i, skill)).join('')}
       </div>`;
     grid.appendChild(card);
   });
   applyFilter();
+}
+
+function buildSkillHTML(phase, i, skill) {
+  const key = `${phase.id}-${i}`;
+  const done = !!state.completed[key];
+  const repo = state.repos[key] || '';
+  const hasRepo = !!repo;
+  const repoLabel = repo ? repo.replace('https://github.com/', '').replace('https://', '') : '';
+
+  return `<div class="skill-item ${done ? 'done' : ''} ${hasRepo ? 'has-repo' : ''}" id="skill-item-${key}" onclick="handleSkillClick(event, ${phase.id}, ${i})">
+    <div class="skill-checkbox">${done ? '✓' : ''}</div>
+    <div class="skill-content">
+      <div class="skill-name">${skill}</div>
+      ${hasRepo ? `<div class="skill-repo-row">
+        <a class="skill-repo-link" href="${repo}" target="_blank" onclick="event.stopPropagation()" title="${repo}">
+          <svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+          ${repoLabel.length > 32 ? repoLabel.substring(0,32)+'…' : repoLabel}
+        </a>
+      </div>` : ''}
+    </div>
+    <div class="skill-actions">
+      <div class="skill-xp">+${10*(phase.id+1)} XP</div>
+      ${IS_VIEW_MODE ? '' : `<button class="skill-repo-btn ${hasRepo ? '' : ''}" title="${hasRepo ? 'Edit/remove repo link' : 'Attach GitHub repo'}" onclick="openRepoModal(event,'${key}',${phase.id},${i})">🔗</button>`}
+    </div>
+  </div>`;
+}
+
+// ============================================================
+// SKILL CLICK — only toggle if clicking on checkbox/name area
+// ============================================================
+function handleSkillClick(event, phaseId, skillIdx) {
+  // Don't toggle if clicking the repo button or repo link
+  if (event.target.closest('.skill-repo-btn') || event.target.closest('.skill-repo-link') || event.target.closest('a')) return;
+  toggleSkill(phaseId, skillIdx);
 }
 
 // ============================================================
@@ -771,22 +946,30 @@ function setFilter(f, btn) {
   applyFilter();
 }
 
+function toggleRepoFilter(btn) {
+  filterRepoOnly = !filterRepoOnly;
+  btn.classList.toggle('active', filterRepoOnly);
+  applyFilter();
+}
+
 function applyFilter() {
   const search = (document.getElementById('skill-search')?.value || '').toLowerCase();
   document.querySelectorAll('.phase-card').forEach(card => {
     const done = parseInt(card.dataset.doneCnt);
     const total = parseInt(card.dataset.total);
     const inProgress = card.dataset.inProgress === '1';
+    const repoCnt = parseInt(card.dataset.repoCnt || '0');
     let visible = true;
     if (currentFilter === 'done' && done !== total) visible = false;
     if (currentFilter === 'todo' && done !== 0) visible = false;
     if (currentFilter === 'inprogress' && !inProgress) visible = false;
+    if (filterRepoOnly && repoCnt === 0) visible = false;
     if (search) {
       const phaseText = card.textContent.toLowerCase();
       visible = visible && phaseText.includes(search);
     }
     card.classList.toggle('hidden', !visible);
-    if (search && visible) {
+    if ((search || filterRepoOnly) && visible) {
       const list = card.querySelector('.skills-list');
       const toggle = card.querySelector('.phase-toggle');
       list.classList.add('open'); toggle.classList.add('open');
@@ -808,23 +991,25 @@ function togglePhase(id) {
 }
 
 function toggleSkill(phaseId, skillIdx) {
-  if (IS_VIEW_MODE) return; // 🔒 locked in view mode
+  if (IS_VIEW_MODE) return;
   const key = `${phaseId}-${skillIdx}`;
   const wasDone = !!state.completed[key];
   state.completed[key] = !wasDone;
   saveState();
 
-  // Update skill item
-  const skillItem = document.querySelector(`#skills-${phaseId} .skill-item:nth-child(${skillIdx + 1})`);
-  if (skillItem) {
-    skillItem.className = `skill-item ${!wasDone ? 'done' : ''}`;
-    skillItem.querySelector('.skill-checkbox').textContent = !wasDone ? '✓' : '';
+  // Rebuild skill item
+  const phase = PHASES[phaseId];
+  const skillEl = document.getElementById(`skill-item-${key}`);
+  if (skillEl) {
+    skillEl.outerHTML = buildSkillHTML(phase, skillIdx, phase.skills[skillIdx]);
   }
 
-  // Update phase card
-  const phase = PHASES[phaseId];
-  let doneCnt = 0;
-  phase.skills.forEach((_, i) => { if (state.completed[`${phaseId}-${i}`]) doneCnt++; });
+  // Update phase card metadata
+  let doneCnt = 0, repoCnt = 0;
+  phase.skills.forEach((_, i) => {
+    if (state.completed[`${phaseId}-${i}`]) doneCnt++;
+    if (state.repos[`${phaseId}-${i}`]) repoCnt++;
+  });
   const pct = Math.round(doneCnt / phase.skills.length * 100);
   const card = document.getElementById(`phase-${phaseId}`);
   if (card) {
@@ -833,6 +1018,15 @@ function toggleSkill(phaseId, skillIdx) {
     card.dataset.doneCnt = doneCnt;
     card.dataset.inProgress = (doneCnt > 0 && doneCnt < phase.skills.length) ? '1' : '0';
     card.classList.toggle('completed', doneCnt === phase.skills.length);
+    // Update repo count in header
+    let repoSpan = card.querySelector('.phase-repo-count');
+    if (repoCnt > 0) {
+      if (!repoSpan) {
+        card.querySelector('.phase-meta').insertAdjacentHTML('beforeend', `<span class="phase-repo-count">🔗 ${repoCnt} repo${repoCnt!==1?'s':''}</span>`);
+      } else {
+        repoSpan.textContent = `🔗 ${repoCnt} repo${repoCnt!==1?'s':''}`;
+      }
+    } else if (repoSpan) repoSpan.remove();
   }
 
   renderHeader();
@@ -844,13 +1038,88 @@ function toggleSkill(phaseId, skillIdx) {
 }
 
 // ============================================================
+// REPO MODAL
+// ============================================================
+function openRepoModal(event, key, phaseId, skillIdx) {
+  event.stopPropagation();
+  if (IS_VIEW_MODE) return;
+  repoEditKey = key;
+  const phase = PHASES[phaseId];
+  document.getElementById('repo-modal-skill-name').textContent = phase.skills[skillIdx];
+  document.getElementById('repo-modal-url').value = state.repos[key] || '';
+  document.getElementById('repo-modal').classList.add('open');
+  setTimeout(() => document.getElementById('repo-modal-url').focus(), 100);
+}
+
+function closeRepoModal() {
+  document.getElementById('repo-modal').classList.remove('open');
+  repoEditKey = null;
+}
+
+function saveRepoLink() {
+  if (!repoEditKey) return;
+  let url = document.getElementById('repo-modal-url').value.trim();
+  if (url && !url.startsWith('http')) url = 'https://' + url;
+  if (!state.repos) state.repos = {};
+  state.repos[repoEditKey] = url;
+  saveState();
+  // Rebuild skill item
+  const [phaseId, skillIdx] = repoEditKey.split('-').map(Number);
+  const phase = PHASES[phaseId];
+  const skillEl = document.getElementById(`skill-item-${repoEditKey}`);
+  if (skillEl) skillEl.outerHTML = buildSkillHTML(phase, skillIdx, phase.skills[skillIdx]);
+  // Update phase header repo count
+  updatePhaseRepoCnt(phaseId);
+  renderHeader();
+  checkAchievements();
+  renderAchievements();
+  closeRepoModal();
+  showToast('🔗 Repo Linked!', url ? url.replace('https://github.com/','') : 'Repo removed');
+}
+
+function clearRepoLink() {
+  if (!repoEditKey || !state.repos) return;
+  delete state.repos[repoEditKey];
+  saveState();
+  const [phaseId, skillIdx] = repoEditKey.split('-').map(Number);
+  const phase = PHASES[phaseId];
+  const skillEl = document.getElementById(`skill-item-${repoEditKey}`);
+  if (skillEl) skillEl.outerHTML = buildSkillHTML(phase, skillIdx, phase.skills[skillIdx]);
+  updatePhaseRepoCnt(phaseId);
+  renderHeader();
+  closeRepoModal();
+  showToast('🗑️ Repo Removed', 'Link cleared from skill');
+}
+
+function updatePhaseRepoCnt(phaseId) {
+  const phase = PHASES[phaseId];
+  let repoCnt = 0;
+  phase.skills.forEach((_, i) => { if (state.repos && state.repos[`${phaseId}-${i}`]) repoCnt++; });
+  const card = document.getElementById(`phase-${phaseId}`);
+  if (!card) return;
+  card.dataset.repoCnt = repoCnt;
+  let repoSpan = card.querySelector('.phase-repo-count');
+  if (repoCnt > 0) {
+    if (!repoSpan) {
+      card.querySelector('.phase-meta').insertAdjacentHTML('beforeend', `<span class="phase-repo-count">🔗 ${repoCnt} repo${repoCnt!==1?'s':''}</span>`);
+    } else {
+      repoSpan.textContent = `🔗 ${repoCnt} repo${repoCnt!==1?'s':''}`;
+    }
+  } else if (repoSpan) repoSpan.remove();
+}
+
+// Enter key in repo modal saves
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') { closeRepoModal(); closeNoteModal(); }
+});
+
+// ============================================================
 // PROJECTS
 // ============================================================
 function addProject() {
-  if (IS_VIEW_MODE) return; // 🔒 locked in view mode
+  if (IS_VIEW_MODE) return;
   const name = document.getElementById('proj-name').value.trim();
   if (!name) { showToast('⚠️ Missing', 'Project name is required'); return; }
-
   const proj = {
     id: Date.now().toString(),
     name,
@@ -864,11 +1133,8 @@ function addProject() {
   };
   state.projects.unshift(proj);
   saveState();
-
-  // Clear form
   ['proj-name','proj-tech','proj-desc','proj-link'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('proj-status-input').value = 'todo';
-
   renderProjects();
   renderHeader();
   checkAchievements();
@@ -876,7 +1142,7 @@ function addProject() {
 }
 
 function cycleStatus(id) {
-  if (IS_VIEW_MODE) return; // 🔒 locked in view mode
+  if (IS_VIEW_MODE) return;
   const proj = state.projects.find(p => p.id === id);
   if (!proj) return;
   const cycle = { todo: 'inprogress', inprogress: 'done', done: 'todo' };
@@ -890,7 +1156,7 @@ function cycleStatus(id) {
 }
 
 function deleteProject(id) {
-  if (IS_VIEW_MODE) return; // 🔒 locked in view mode
+  if (IS_VIEW_MODE) return;
   if (!confirm('Remove this project?')) return;
   state.projects = state.projects.filter(p => p.id !== id);
   saveState();
@@ -900,7 +1166,7 @@ function deleteProject(id) {
 }
 
 function openNoteModal(id) {
-  if (IS_VIEW_MODE) return; // 🔒 locked in view mode
+  if (IS_VIEW_MODE) return;
   const proj = state.projects.find(p => p.id === id);
   if (!proj) return;
   noteEditId = id;
@@ -924,9 +1190,7 @@ function renderProjects() {
   document.getElementById('proj-inprog').textContent = inProg;
 
   if (state.projects.length === 0) {
-    list.innerHTML = `<div class="empty-projects">
-      🏗️<br>No projects yet.<br>Add your first project using the form →<br><span style="font-size:10px;color:var(--dim)">Every project you build is portfolio evidence</span>
-    </div>`;
+    list.innerHTML = `<div class="empty-projects">🏗️<br>No projects yet.<br>Add your first project using the form →<br><span style="font-size:10px;color:var(--dim)">Every project you build is portfolio evidence</span></div>`;
     return;
   }
 
@@ -984,7 +1248,7 @@ function renderLeaderboard() {
         <span class="lb-badge" style="color:${rank.color};border:1px solid ${rank.color}44;background:${rank.color}11">${rank.name}</span>
         <div class="lb-score">
           <div class="lb-xp-val">${entry.xp.toLocaleString()} XP</div>
-          <div class="lb-skills-val">${entry.skills} skills · ${entry.projects || 0} projects</div>
+          <div class="lb-skills-val">${entry.skills} skills · ${entry.projects || 0} projects · ${entry.repos || 0} repos</div>
         </div>
       </div>`;
     }).join('');
@@ -1001,7 +1265,7 @@ function renderLeaderboard() {
       <span class="lb-badge" style="color:${rank.color};border:1px solid ${rank.color}44;background:${rank.color}11">${rank.name}</span>
       <div class="lb-score">
         <div class="lb-xp-val">${s.xp.toLocaleString()} XP</div>
-        <div class="lb-skills-val">${s.total} skills · ${state.projects.length} projects</div>
+        <div class="lb-skills-val">${s.total} skills · ${state.projects.length} projects · ${s.repoCount} repos</div>
       </div>
     </div>`;
 }
@@ -1012,7 +1276,7 @@ function saveToLeaderboard() {
   if (label === null) return;
   let history = [];
   try { history = JSON.parse(localStorage.getItem('dso_lb') || '[]'); } catch(e) {}
-  history.push({ label: label || `Session ${new Date().toLocaleDateString()}`, date: new Date().toLocaleString(), xp: s.xp, skills: s.total, projects: state.projects.length });
+  history.push({ label: label || `Session ${new Date().toLocaleDateString()}`, date: new Date().toLocaleString(), xp: s.xp, skills: s.total, projects: state.projects.length, repos: s.repoCount });
   localStorage.setItem('dso_lb', JSON.stringify(history));
   renderLeaderboard();
   showToast('✅ Saved', 'Session saved to leaderboard!');
@@ -1077,83 +1341,40 @@ function switchTab(tab, btn) {
   if (tab === 'projects') renderProjects();
 }
 
-// Close modal on overlay click
-document.getElementById('note-modal').addEventListener('click', function(e) {
-  if (e.target === this) closeNoteModal();
-});
-
-// ── COPY SHARE LINK ──
-function copyViewLink() {
-  const url = window.location.href.split('?')[0] + '?view=true';
-  navigator.clipboard.writeText(url).then(() => {
-    showToast('🔗 Link Copied!', 'Share this read-only link on LinkedIn');
-  }).catch(() => {
-    prompt('Copy this link:', url);
-  });
-}
+// Modal overlay click to close
+document.getElementById('note-modal').addEventListener('click', function(e) { if (e.target === this) closeNoteModal(); });
+document.getElementById('repo-modal').addEventListener('click', function(e) { if (e.target === this) closeRepoModal(); });
 
 // ── VIEW MODE ──
 const IS_VIEW_MODE = new URLSearchParams(window.location.search).get('view') === 'true';
 
 function applyViewMode() {
   if (!IS_VIEW_MODE) return;
-
-  // Add body class for CSS locking
   document.body.classList.add('view-mode');
-
-  // Show banner
   document.getElementById('view-banner').style.display = 'block';
-
-  // Update header title
   document.getElementById('header-title').innerHTML = 'SURYA\'S <span>DEVSECOPS</span> JOURNEY';
-
-  // Update intro
-  document.getElementById('tree-intro').textContent = '▶ Read-only view of Surya\'s learning progress. Skills shown in green are completed.';
-
-  // Hide share button (already viewing)
+  document.getElementById('tree-intro').innerHTML = '▶ Read-only view of Surya\'s learning progress. <span style="color:var(--accent4)">Purple links</span> are GitHub repos — proof of work per skill.';
   document.getElementById('copy-link-btn').style.display = 'none';
 
-  // Hide add project form, show only cards
-  const addPanel = document.querySelector('.add-project-panel');
-  if (addPanel) addPanel.style.display = 'none';
-  const projLayout = document.querySelector('.projects-layout');
-  if (projLayout) projLayout.style.gridTemplateColumns = '1fr';
-
-  // Load state from URL encoded data if present, else use demo/empty
   const encoded = new URLSearchParams(window.location.search).get('data');
   if (encoded) {
-    try {
-      const decoded = JSON.parse(atob(encoded));
-      state = { ...state, ...decoded };
-    } catch(e) {}
+    try { const decoded = JSON.parse(atob(encoded)); state = { ...state, ...decoded }; } catch(e) {}
   }
 }
 
 function encodeStateToURL() {
-  // Generates a shareable URL with your progress baked in
-  const shareData = {
-    completed: state.completed,
-    projects: state.projects,
-    earnedAch: state.earnedAch
-  };
+  const shareData = { completed: state.completed, repos: state.repos || {}, projects: state.projects, earnedAch: state.earnedAch };
   const encoded = btoa(JSON.stringify(shareData));
   const url = window.location.href.split('?')[0] + '?view=true&data=' + encoded;
   navigator.clipboard.writeText(url).then(() => {
-    showToast('🔗 Link Copied!', 'Your progress is embedded — share on LinkedIn!');
-  }).catch(() => {
-    prompt('Copy this link:', url);
-  });
+    showToast('🔗 Link Copied!', 'Your progress + repos embedded — share on LinkedIn!');
+  }).catch(() => { prompt('Copy this link:', url); });
 }
 
-// Override copyViewLink to embed progress
-function copyViewLink() {
-  encodeStateToURL();
-}
+function copyViewLink() { encodeStateToURL(); }
 
-// Disable all interactions in view mode
 function guardViewMode() {
   if (!IS_VIEW_MODE) return;
-  // Override toggleSkill to do nothing
   window.toggleSkill = () => {};
   window.addProject = () => {};
   window.deleteProject = () => {};
@@ -1161,11 +1382,7 @@ function guardViewMode() {
   window.openNoteModal = () => {};
   window.saveToLeaderboard = () => {};
   window.clearLeaderboard = () => {};
-
-  // Style all skill items as non-interactive
-  document.querySelectorAll('.skill-item').forEach(el => {
-    el.style.cursor = 'default';
-  });
+  window.openRepoModal = () => {};
 }
 
 // ── INIT ──
